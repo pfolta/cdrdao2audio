@@ -50,6 +50,7 @@ jobs:
         run: "go mod download"
 
       - name: "Build cdrdao2wav"
+        shell: "bash"
         env:
           GOOS: "${{ matrix.goos }}"
           GOARCH: "${{ matrix.goarch }}"
