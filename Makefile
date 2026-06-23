@@ -1,4 +1,3 @@
-
 VERSION := $(shell git describe --match "v[0-9]*" --dirty="-m" --always --tags || echo "dev")
 BUILD_DATE := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
