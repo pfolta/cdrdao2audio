@@ -13,12 +13,6 @@ import (
 )
 
 const (
-	ProjectName = "cdrdao2wav"
-	Version     = "0.1.0"
-	Copyright   = "Copyright (C) Peter Folta"
-)
-
-const (
 	SectorSize      = 2352
 	SampleRate      = 44100
 	Channels        = 2
@@ -242,7 +236,7 @@ func main() {
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "version", "--version", "-v":
-			fmt.Printf("%s version %s - %s\n", ProjectName, Version, Copyright)
+			fmt.Printf("%s version %s (%s) - %s\n", "cdrdao2wav", Version, BuildDate, "Copyright (C) Peter Folta")
 			return
 		}
 	}
