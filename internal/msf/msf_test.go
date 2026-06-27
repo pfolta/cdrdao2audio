@@ -18,7 +18,7 @@ func TestNew(t *testing.T) {
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("New(%d)", test), func(t *testing.T) {
 			actual, err := New(test)
-			assert.Assert(t, is.Nil(err))
+			assert.NilError(t, err)
 			assert.Equal(t, actual.TotalFrames(), test)
 		})
 	}
@@ -57,6 +57,7 @@ func TestParse(t *testing.T) {
 		{"0", MSF{0}},
 		{"00:00:00", MSF{0}},
 		{"00:00:01", MSF{1}},
+		{"00:00:74", MSF{74}},
 		{"00:01:00", MSF{75}},
 		{"01:00:00", MSF{4_500}},
 		{"02:10:30", MSF{9_780}},
@@ -66,7 +67,7 @@ func TestParse(t *testing.T) {
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("Parse(%s)", test.in), func(t *testing.T) {
 			actual, err := Parse(test.in)
-			assert.Assert(t, is.Nil(err))
+			assert.NilError(t, err)
 			assert.Assert(t, is.Equal(actual, test.expected))
 		})
 	}
@@ -100,8 +101,8 @@ func TestParseErrors(t *testing.T) {
 }
 
 func TestMustParse(t *testing.T) {
-	t.Run("MustParse(\"01:00:00\") does not panic", func(t *testing.T) {
-		assert.Assert(t, is.Equal(MustParse("01:00:00"), MSF{4_500}))
+	t.Run("MustParse(\"01:02:03\") does not panic", func(t *testing.T) {
+		assert.Assert(t, is.Equal(MustParse("01:02:03"), MSF{4_653}))
 	})
 
 	t.Run("MustParse(\"invalid\") panics", func(t *testing.T) {

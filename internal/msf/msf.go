@@ -15,7 +15,7 @@ const (
 	FramesPerSecond = 75
 	MaxTotalFrames  = MaxMinutes*60*FramesPerSecond + MaxSeconds*FramesPerSecond + MaxFrames
 
-	SectorSize = 2352
+	SectorBytes = 2352
 )
 
 var msfRegex = regexp.MustCompile(`^(\d{2}):(\d{2}):(\d{2})$`)
@@ -92,7 +92,7 @@ func (msf MSF) TotalFrames() uint32 {
 
 // SectorBytes returns the total size of this [MSF] in bytes.
 func (msf MSF) SectorBytes() uint32 {
-	return msf.totalFrames * SectorSize
+	return msf.totalFrames * SectorBytes
 }
 
 // String returns a MM:SS:FF timestamp representation of this [MSF].
