@@ -12,7 +12,8 @@ const (
 	MaxSeconds = 59
 	MaxFrames  = 74
 
-	MaxTotalFrames = MaxMinutes*60*75 + MaxSeconds*75 + MaxFrames
+	FramesPerSecond = 75
+	MaxTotalFrames  = MaxMinutes*60*FramesPerSecond + MaxSeconds*FramesPerSecond + MaxFrames
 
 	SectorSize = 2352
 )
@@ -70,7 +71,7 @@ func Parse(str string) (MSF, error) {
 		return MSF{}, err
 	}
 
-	return New(uint32(m*60*75 + s*75 + f))
+	return New(uint32(m*60*FramesPerSecond + s*FramesPerSecond + f))
 }
 
 // MustParse is like [Parse] but panics if the string cannot be parsed.
@@ -96,8 +97,8 @@ func (msf MSF) SectorBytes() uint32 {
 
 // String returns a MM:SS:FF timestamp representation of this [MSF].
 func (msf MSF) String() string {
-	m := msf.totalFrames / 75 / 60
-	s := msf.totalFrames / 75 % 60
-	f := msf.totalFrames % 75
+	m := msf.totalFrames / FramesPerSecond / 60
+	s := msf.totalFrames / FramesPerSecond % 60
+	f := msf.totalFrames % FramesPerSecond
 	return fmt.Sprintf("%02d:%02d:%02d", m, s, f)
 }
