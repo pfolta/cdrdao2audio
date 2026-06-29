@@ -148,6 +148,87 @@ func TestSectorBytes(t *testing.T) {
 	}
 }
 
+func TestAdd(t *testing.T) {
+	tests := []struct {
+		a        MSF
+		b        MSF
+		expected MSF
+	}{
+		{MSF{}, MSF{}, MSF{}},
+		{MSF{0}, MSF{0}, MSF{0}},
+		{MSF{1}, MSF{2}, MSF{3}},
+		{MSF{1_000}, MSF{2_000}, MSF{3_000}},
+		{MSF{449_998}, MSF{1}, MSF{449_999}},
+	}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("MSF{%d}.Add(MSF{%d})", test.a.TotalFrames(), test.b.TotalFrames()), func(t *testing.T) {
+			actual, err := test.a.Add(test.b)
+			assert.NilError(t, err)
+			assert.Assert(t, is.Equal(actual, test.expected))
+		})
+	}
+}
+
+func TestAddErrors(t *testing.T) {
+	tests := []struct {
+		a MSF
+		b MSF
+	}{
+		{MSF{449_999}, MSF{1}},
+		{MSF{300_000}, MSF{300_000}},
+	}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("MSF{%d}.Add(MSF{%d}) errors", test.a.TotalFrames(), test.b.TotalFrames()), func(t *testing.T) {
+			actual, err := test.a.Add(test.b)
+			assert.Assert(t, is.ErrorIs(err, ErrInvalidMSF))
+			assert.Assert(t, is.Equal(actual, MSF{}))
+		})
+	}
+}
+
+func TestSub(t *testing.T) {
+	tests := []struct {
+		a        MSF
+		b        MSF
+		expected MSF
+	}{
+		{MSF{}, MSF{}, MSF{}},
+		{MSF{0}, MSF{0}, MSF{0}},
+		{MSF{3}, MSF{2}, MSF{1}},
+		{MSF{2_000}, MSF{1_000}, MSF{1_000}},
+		{MSF{449_999}, MSF{1}, MSF{449_998}},
+		{MSF{449_999}, MSF{449_999}, MSF{0}},
+	}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("MSF{%d}.Sub(MSF{%d})", test.a.TotalFrames(), test.b.TotalFrames()), func(t *testing.T) {
+			actual, err := test.a.Sub(test.b)
+			assert.NilError(t, err)
+			assert.Assert(t, is.Equal(actual, test.expected))
+		})
+	}
+}
+
+func TestSubErrors(t *testing.T) {
+	tests := []struct {
+		a MSF
+		b MSF
+	}{
+		{MSF{0}, MSF{1}},
+		{MSF{100_000}, MSF{200_000}},
+	}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("MSF{%d}.Sub(MSF{%d}) errors", test.a.TotalFrames(), test.b.TotalFrames()), func(t *testing.T) {
+			actual, err := test.a.Sub(test.b)
+			assert.Assert(t, is.ErrorIs(err, ErrInvalidMSF))
+			assert.Assert(t, is.Equal(actual, MSF{}))
+		})
+	}
+}
+
 func TestString(t *testing.T) {
 	tests := []struct {
 		in       MSF

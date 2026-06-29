@@ -90,6 +90,39 @@ func (msf MSF) SectorBytes() uint32 {
 	return msf.totalFrames * SectorBytes
 }
 
+// Add returns the sum of msf and other as a new [MSF] value.
+// It returns an error if the resulting value would exceed the maximum MSF.
+func (msf MSF) Add(other MSF) (MSF, error) {
+	if msf.totalFrames+other.totalFrames > MaxTotalFrames {
+		err := fmt.Errorf(
+			"%w: %d + %d > %d",
+			ErrInvalidMSF,
+			msf.totalFrames,
+			other.totalFrames,
+			MaxTotalFrames,
+		)
+		return MSF{}, err
+	}
+
+	return MSF{msf.totalFrames + other.totalFrames}, nil
+}
+
+// Sub returns the difference between msf and other as a new [MSF] value.
+// It returns an error if the resulting value would be negative.
+func (msf MSF) Sub(other MSF) (MSF, error) {
+	if other.totalFrames > msf.totalFrames {
+		err := fmt.Errorf(
+			"%w: %d - %d < 0",
+			ErrInvalidMSF,
+			msf.totalFrames,
+			other.totalFrames,
+		)
+		return MSF{}, err
+	}
+
+	return MSF{msf.totalFrames - other.totalFrames}, nil
+}
+
 // String returns a MM:SS:FF timestamp representation of this [MSF].
 func (msf MSF) String() string {
 	m := msf.totalFrames / FramesPerSecond / 60
