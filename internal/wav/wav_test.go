@@ -21,11 +21,11 @@ func TestWrite(t *testing.T) {
 
 		bytesWritten, err := writer.Write([]byte{1, 2, 3, 4})
 		assert.NilError(t, err)
-		assert.Assert(t, is.Equal(bytesWritten, uint32(4)))
+		assert.Assert(t, is.Equal(bytesWritten, 4))
 
 		bytesWritten, err = writer.Write([]byte{5, 6, 7, 8})
 		assert.NilError(t, err)
-		assert.Assert(t, is.Equal(bytesWritten, uint32(4)))
+		assert.Assert(t, is.Equal(bytesWritten, 4))
 
 		err = writer.Close()
 		assert.NilError(t, err)
@@ -54,14 +54,14 @@ func TestWrite(t *testing.T) {
 
 		bytesWritten, err := writer.Write([]byte{1, 2, 3, 4})
 		assert.NilError(t, err)
-		assert.Assert(t, is.Equal(bytesWritten, uint32(4)))
+		assert.Assert(t, is.Equal(bytesWritten, 4))
 
 		bytesWritten, err = writer.Write([]byte{5, 6, 7, 8, 9})
-		assert.Assert(t, is.ErrorIs(err, ErrDataOverflow))
+		assert.Assert(t, is.ErrorIs(err, ErrWriteOverflow))
 		assert.Assert(t, is.ErrorContains(err, fmt.Sprintf("%d bytes written", 4)))
 		assert.Assert(t, is.ErrorContains(err, fmt.Sprintf("write %d bytes", 5)))
 		assert.Assert(t, is.ErrorContains(err, fmt.Sprintf("exceeds %d bytes", dataSize)))
-		assert.Assert(t, is.Equal(bytesWritten, uint32(0)))
+		assert.Assert(t, is.Equal(bytesWritten, 0))
 	})
 
 	t.Run("after close", func(t *testing.T) {

@@ -17,15 +17,15 @@ var (
 	ErrCreateFile      = errors.New("wav: create file")
 	ErrWriteHeader     = errors.New("wav: write header")
 	ErrWriteData       = errors.New("wav: write data")
-	ErrDataOverflow    = errors.New("wav: write overflow")
-	ErrWriteIncomplete = errors.New("wav: incomplete data")
+	ErrWriteIncomplete = errors.New("wav: write incomplete")
+	ErrWriteOverflow   = errors.New("wav: write overflow")
 	ErrCloseFile       = errors.New("wav: close file")
 )
 
 type Writer struct {
 	file         *os.File
 	dataSize     uint32
-	bytesWritten uint32
+	bytesWritten int
 	closed       bool
 }
 
@@ -65,33 +65,33 @@ func NewWriter(path string, dataSize uint32) (*Writer, error) {
 	return writer, nil
 }
 
-// Write writes a slice of bytes to the WAV file.
+// Write writes PCM data to the WAV file.
 // It returns the number of bytes written and an error, if any.
-func (writer *Writer) Write(chunk []byte) (uint32, error) {
+func (writer *Writer) Write(p []byte) (int, error) {
 	if writer.closed {
 		err := fmt.Errorf("%w: write after close", ErrWriteData)
 		return 0, err
 	}
 
-	if writer.bytesWritten+uint32(len(chunk)) > writer.dataSize {
+	if writer.bytesWritten+len(p) > int(writer.dataSize) {
 		err := fmt.Errorf(
 			"%w: %d bytes written, attempting to write %d bytes, exceeds %d bytes",
-			ErrDataOverflow,
+			ErrWriteOverflow,
 			writer.bytesWritten,
-			len(chunk),
+			len(p),
 			writer.dataSize,
 		)
 		return 0, err
 	}
 
-	bytesWritten, err := writer.file.Write(chunk)
-	writer.bytesWritten += uint32(bytesWritten)
+	bytesWritten, err := writer.file.Write(p)
+	writer.bytesWritten += bytesWritten
 
 	if err != nil {
-		return uint32(bytesWritten), fmt.Errorf("%w: %w", ErrWriteData, err)
+		return bytesWritten, fmt.Errorf("%w: %w", ErrWriteData, err)
 	}
 
-	return uint32(bytesWritten), nil
+	return bytesWritten, nil
 }
 
 // Close closes the WAV file.
@@ -106,7 +106,7 @@ func (writer *Writer) Close() error {
 		return fmt.Errorf("%w: %w", ErrCloseFile, err)
 	}
 
-	if writer.bytesWritten != writer.dataSize {
+	if writer.bytesWritten != int(writer.dataSize) {
 		return fmt.Errorf(
 			"%w: wrote %d bytes, expected %d bytes",
 			ErrWriteIncomplete,
@@ -119,7 +119,7 @@ func (writer *Writer) Close() error {
 }
 
 func (writer *Writer) writeHeader() error {
-	header := header{
+	wavHeader := header{
 		ChunkID:       [4]byte{'R', 'I', 'F', 'F'},
 		ChunkSize:     36 + writer.dataSize,
 		Format:        [4]byte{'W', 'A', 'V', 'E'},
@@ -135,5 +135,5 @@ func (writer *Writer) writeHeader() error {
 		Subchunk2Size: writer.dataSize,
 	}
 
-	return binary.Write(writer.file, binary.LittleEndian, &header)
+	return binary.Write(writer.file, binary.LittleEndian, &wavHeader)
 }
