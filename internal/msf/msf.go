@@ -18,7 +18,7 @@ const (
 	SectorBytes = 2352
 )
 
-var msfRegex = regexp.MustCompile(`^(\d{2}):([0-5][0-9]):([0-6][0-9]|7[0-4])$`)
+var msfRegex = regexp.MustCompile(`^([0-9][0-9]):([0-5][0-9]):([0-6][0-9]|7[0-4])$`)
 
 // ErrorInvalidMSF indicates an invalid [MSF] value.
 var ErrInvalidMSF = errors.New("invalid MSF")
