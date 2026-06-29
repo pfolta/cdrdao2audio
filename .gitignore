@@ -1,4 +1,4 @@
 /build
 
 # cdrdao bin-files
-*.bin
+**/testdata/**/*.bin
