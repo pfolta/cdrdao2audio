@@ -18,7 +18,7 @@ const (
 	SectorBytes = 2352
 )
 
-var msfRegex = regexp.MustCompile(`^(\d{2}):(\d{2}):(\d{2})$`)
+var msfRegex = regexp.MustCompile(`^(\d{2}):(0[0-9]|[1-5][0-9]):(0[0-9]|[1-6][0-9]|7[0-4])$`)
 
 // ErrorInvalidMSF indicates an invalid [MSF] value.
 var ErrInvalidMSF = errors.New("invalid MSF")
@@ -65,11 +65,6 @@ func Parse(str string) (MSF, error) {
 	m, _ := strconv.ParseUint(msfParts[1], 10, 32)
 	s, _ := strconv.ParseUint(msfParts[2], 10, 32)
 	f, _ := strconv.ParseUint(msfParts[3], 10, 32)
-
-	if m > MaxMinutes || s > MaxSeconds || f > MaxFrames {
-		err := fmt.Errorf("%w: %s", ErrInvalidMSF, str)
-		return MSF{}, err
-	}
 
 	return New(uint32(m*60*FramesPerSecond + s*FramesPerSecond + f))
 }
