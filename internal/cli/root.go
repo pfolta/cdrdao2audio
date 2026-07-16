@@ -18,6 +18,13 @@ func NewRootCommand() *cobra.Command {
 		CompletionOptions: cobra.CompletionOptions{
 			DisableDefaultCmd: true,
 		},
+		// By default, if neither Run nor RunE is defined, Cobra displays the
+		// help text and exits successfully. Treat invoking the root command as
+		// an error instead.
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			_ = cmd.Help()
+			return ErrNoCommand
+		},
 	}
 
 	cmd.AddCommand(NewVersionCommand(metadata))
