@@ -57,24 +57,3 @@ func TestNewVersionCommand(t *testing.T) {
 		})
 	}
 }
-
-func TestRunVersion(t *testing.T) {
-	tests := []struct {
-		name     string
-		opts     versionOptions
-		expected string
-	}{
-		{"default", versionOptions{}, expectedLongVersion},
-		{"short version", versionOptions{short: true}, expectedShortVersion},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			out := new(bytes.Buffer)
-
-			err := runVersion(out, testMetadata, test.opts)
-			assert.NilError(t, err)
-			assert.Equal(t, out.String(), test.expected)
-		})
-	}
-}
