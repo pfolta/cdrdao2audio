@@ -49,6 +49,7 @@ install:
 
 .PHONY: lint
 lint:
+	gofmt -d .
 	go vet ./...
 
 .PHONY: release
