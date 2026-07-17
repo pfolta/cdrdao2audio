@@ -2,7 +2,6 @@ name: "Build cdrdao2audio"
 
 on:
   push:
-  pull_request:
 
 jobs:
   lint-and-test:
