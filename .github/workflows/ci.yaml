@@ -4,8 +4,22 @@ on:
   push:
 
 jobs:
+  version:
+    name: "Get version"
+    runs-on: "ubuntu-latest"
+    outputs:
+      version: "${{ steps.version.outputs.version }}"
+
+    steps:
+      - name: "Get version"
+        id: "version"
+        shell: "bash"
+        run: |
+          version="$(make version)"
+          echo "version=${version#v}" >> "$GITHUB_OUTPUT"
+
   lint-and-test:
-    name: "Lint and Test"
+    name: "Lint and test"
     runs-on: "ubuntu-latest"
 
     steps:
@@ -50,7 +64,9 @@ jobs:
 
   build:
     name: "Build ${{ matrix.goos }}/${{ matrix.goarch }}"
-    needs: "lint-and-test"
+    needs:
+      - "version"
+      - "lint-and-test"
     runs-on: "${{ matrix.runs-on }}"
 
     strategy:
@@ -114,7 +130,7 @@ jobs:
       - name: "Upload build artifact"
         uses: "actions/upload-artifact@v7.0.1"
         with:
-          name: "cdrdao2audio-${{ matrix.goos }}-${{ matrix.goarch }}"
+          name: "cdrdao2audio-${{ needs.version.outputs.version }}-${{ matrix.goos }}-${{ matrix.goarch }}"
           path: "build/bin/cdrdao2audio${{ matrix.goos == 'windows' && '.exe' || '' }}"
 
   lint-dockerfile:
@@ -133,7 +149,9 @@ jobs:
 
   build-docker-image:
     name: "Build Docker Image"
-    needs: "lint-dockerfile"
+    needs:
+      - "version"
+      - "lint-dockerfile"
     runs-on: "ubuntu-latest"
 
     steps:
@@ -141,13 +159,6 @@ jobs:
         uses: "actions/checkout@v7.0.0"
         with:
           fetch-depth: 0
-
-      - name: "Get version"
-        id: "version"
-        shell: "bash"
-        run: |
-          version="$(make version)"
-          echo "version=${version#v}" >> "$GITHUB_OUTPUT"
 
       - name: "Set up Docker Buildx"
         uses: "docker/setup-buildx-action@v4.2.0"
@@ -160,5 +171,5 @@ jobs:
           platforms: "linux/386,linux/amd64,linux/arm,linux/arm64"
           tags: |
             pfolta/cdrdao2audio:latest
-            pfolta/cdrdao2audio:${{ steps.version.outputs.version }}
+            pfolta/cdrdao2audio:${{ needs.version.outputs.version }}
           push: false
