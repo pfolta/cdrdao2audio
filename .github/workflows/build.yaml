@@ -5,8 +5,8 @@ on:
   pull_request:
 
 jobs:
-  test:
-    name: "Test"
+  lint-and-test:
+    name: "Lint and Test"
     runs-on: "ubuntu-latest"
 
     steps:
@@ -42,7 +42,7 @@ jobs:
 
   build:
     name: "Build ${{ matrix.goos }}/${{ matrix.goarch }}"
-    needs: "test"
+    needs: "lint-and-test"
     runs-on: "${{ matrix.runs-on }}"
 
     strategy:
@@ -106,7 +106,7 @@ jobs:
   publish-coverage-data:
     name: "Publish coverage data to Codecov"
     needs:
-      - "test"
+      - "lint-and-test"
       - "build"
     runs-on: "ubuntu-latest"
 
