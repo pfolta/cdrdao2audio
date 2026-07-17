@@ -11,6 +11,11 @@ jobs:
       version: "${{ steps.version.outputs.version }}"
 
     steps:
+      - name: "Check out source code"
+        uses: "actions/checkout@v7.0.0"
+        with:
+          fetch-depth: 0
+
       - name: "Get version"
         id: "version"
         shell: "bash"
