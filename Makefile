@@ -36,11 +36,6 @@ build:
 		-o "$(BUILD_DIR)/bin/$(BINARY)" \
 		./cmd/cdrdao2audio
 
-.PHONY: check-license-headers
-check-license-headers:
-	find . -name "*.go" -print0 \
-	  | xargs -0 go run github.com/google/addlicense@v1.2.0 -check -f LICENSE
-
 .PHONY: clean
 clean:
 	rm -rf "$(BUILD_DIR)"
@@ -51,6 +46,11 @@ install:
 	go install \
 		-ldflags "$(GO_LDFLAGS)" \
 		./cmd/cdrdao2audio
+
+.PHONY: license-headers
+license-headers:
+	find . -name "*.go" -print0 \
+	  | xargs -0 go run github.com/google/addlicense@v1.2.0 -check -f LICENSE
 
 .PHONY: lint
 lint:
@@ -77,7 +77,7 @@ test:
 		-o "$(BUILD_DIR)/reports/coverage.html"
 
 .PHONY: validate
-validate: check-license-headers lint
+validate: license-headers lint
 
 .PHONY: version
 version:
