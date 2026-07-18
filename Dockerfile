@@ -12,13 +12,13 @@ RUN --mount=type=cache,target=/go/pkg/mod,sharing=locked \
     --mount=type=cache,target=/root/.cache/go-build,sharing=locked \
     go mod download
 
-FROM builder-deps AS builder-lint
+FROM builder-deps AS builder-validate
 RUN --mount=type=bind,target=.,readonly \
     --mount=type=cache,target=/go/pkg/mod,sharing=locked \
     --mount=type=cache,target=/root/.cache/go-build,sharing=locked \
-    make lint
+    make validate
 
-FROM builder-lint AS builder-test
+FROM builder-validate AS builder-test
 ARG BUILD_DIR
 RUN --mount=type=bind,target=.,readonly \
     --mount=type=cache,target=/go/pkg/mod,sharing=locked \
