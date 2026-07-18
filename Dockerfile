@@ -23,7 +23,6 @@ ARG BUILD_DIR
 RUN --mount=type=bind,target=.,readonly \
     --mount=type=cache,target=/go/pkg/mod,sharing=locked \
     --mount=type=cache,target=/root/.cache/go-build,sharing=locked \
-    mkdir -p ${BUILD_DIR} && \
     make test BUILD_DIR=${BUILD_DIR}
 
 FROM builder-test AS builder
@@ -33,7 +32,6 @@ ARG BUILD_DIR
 RUN --mount=type=bind,target=.,readonly \
     --mount=type=cache,target=/go/pkg/mod,sharing=locked \
     --mount=type=cache,target=/root/.cache/go-build,sharing=locked \
-    mkdir -p ${BUILD_DIR} && \
     make build GOOS=${TARGETOS} GOARCH=${TARGETARCH} BUILD_DIR=${BUILD_DIR}
 
 FROM scratch AS runtime
