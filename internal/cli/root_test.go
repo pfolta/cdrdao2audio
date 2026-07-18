@@ -9,7 +9,6 @@ import (
 )
 
 func TestNewRootCommand(t *testing.T) {
-
 	// Run the root command with the built-in "help" subcommand.
 	helpOut := new(bytes.Buffer)
 	cmd := NewRootCommand()
