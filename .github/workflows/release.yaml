@@ -81,7 +81,7 @@ jobs:
           current_tag="${{ github.ref_name }}"
           previous_tag="$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || true)"
 
-          log_format="- [%h](https://github.com/${repository}/commit/%H) %s"
+          log_format="- [`%h`](https://github.com/${repository}/commit/%H) %s"
 
           {
             echo "notes<<EOF"
@@ -91,11 +91,13 @@ jobs:
             if [ -n "${previous_tag}" ]; then
               git log --pretty=format:"${log_format}" "${previous_tag}..HEAD"
               echo
-              echo "**Full Changelog**: [${previous_tag}...${current_tag}](https://github.com/${repository}/compare/${previous_tag}...${current_tag})"
+              echo
+              echo "**Full Changelog**: [`${previous_tag}...${current_tag}`](https://github.com/${repository}/compare/${previous_tag}...${current_tag})"
             else
               git log --pretty=format:"${log_format}"
               echo
-              echo "**Full Changelog**: [${current_tag}](https://github.com/${repository}/commits/${current_tag})"
+              echo
+              echo "**Full Changelog**: [`${current_tag}`](https://github.com/${repository}/commits/${current_tag})"
             fi
 
             echo
