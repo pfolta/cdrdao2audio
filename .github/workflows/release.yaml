@@ -31,7 +31,6 @@ jobs:
         uses: "actions/download-artifact@v7.0.0"
         with:
           pattern: "cdrdao2audio-*"
-          merge-multiple: true
           path: "release"
       
       - name: "Rename release artifacts"
@@ -40,7 +39,7 @@ jobs:
           version="${{ needs.build.outputs.version }}"
 
           shopt -s nullglob
-          artifacts=(release/cdrdao2audio-*)
+          artifacts=(release/cdrdao2audio-*/cdrdao2audio*)
 
           if [ "${#artifacts[@]}" -eq 0 ]; then
             echo "No release artifacts found"
@@ -48,9 +47,13 @@ jobs:
           fi
 
           for artifact in "${artifacts[@]}"; do
+            directory="$(basename "$(dirname "$artifact")")"
             filename="$(basename "$artifact")"
-            mv "$artifact" "release/cdrdao2audio-${version}-${filename#cdrdao2audio-}"
+            mv "$artifact" \
+              "release/cdrdao2audio-${version}-${directory#cdrdao2audio-}${filename#cdrdao2audio-}"
           done
+
+          find release -type d -empty -delete
       
       - name: "Generate checksums"
         shell: "bash"
