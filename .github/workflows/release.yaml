@@ -27,6 +27,11 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
+      - name: "Check out source code"
+        uses: "actions/checkout@v7.0.0"
+        with:
+          fetch-depth: 0
+
       - name: "Download build artifacts"
         uses: "actions/download-artifact@v7.0.0"
         with:
