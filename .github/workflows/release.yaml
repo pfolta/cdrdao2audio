@@ -73,6 +73,35 @@ jobs:
           cd release
           sha256sum * > SHA256SUMS
 
+      - name: "Generate release notes"
+        id: "release-notes"
+        shell: "bash"
+        run: |
+          repository="${{ github.repository }}"
+          current_tag="${{ github.ref_name }}"
+          previous_tag="$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || true)"
+
+          log_format="- [%h](https://github.com/${repository}/commit/%H) %s"
+
+          {
+            echo "notes<<EOF"
+            echo "# Changelog"
+            echo
+
+            if [ -n "${previous_tag}" ]; then
+              git log --pretty=format:"${log_format}" "${previous_tag}..HEAD"
+              echo
+              echo "**Full Changelog**: [${previous_tag}...${current_tag}](https://github.com/${repository}/compare/${previous_tag}...${current_tag})"
+            else
+              git log --pretty=format:"${log_format}"
+              echo
+              echo "**Full Changelog**: [${current_tag}](https://github.com/${repository}/commits/${current_tag})"
+            fi
+
+            echo
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: "Create GitHub Release"
         env:
           GH_TOKEN: "${{ github.token }}"
@@ -80,7 +109,9 @@ jobs:
           gh release create \
             "${{ github.ref_name }}" \
             --title "${{ github.ref_name }}" \
+            --notes "${{ steps.release-notes.outputs.notes }}" \
             --prerelease="${{ startsWith(github.ref_name, 'v0.') }}" \
-            --generate-notes \
+            --verify-tag \
+            --fail-on-no-commits \
             --draft \
             release/*
