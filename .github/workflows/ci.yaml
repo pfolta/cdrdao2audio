@@ -18,6 +18,6 @@ jobs:
     uses: "./.github/workflows/build.yaml"
     with:
       publish-coverage: "${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
-      docker-image-tags: "pfolta/cdrdao2audio:development"
+      docker-image-development-tag: true
       push-docker-image: "${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
     secrets: "inherit"
