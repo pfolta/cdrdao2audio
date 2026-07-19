@@ -21,9 +21,11 @@
 package cdrdao2audio
 
 import (
+	"runtime"
 	"testing"
 
 	"gotest.tools/v3/assert"
+	is "gotest.tools/v3/assert/cmp"
 )
 
 func TestGetMetadata(t *testing.T) {
@@ -44,7 +46,7 @@ func TestGetMetadata(t *testing.T) {
 	assert.Equal(t, metadata.Name, programName)
 	assert.Equal(t, metadata.Version, "v1.4.2-test")
 	assert.Equal(t, metadata.BuildDate, "2026-07-15T22:29:10Z")
-	assert.Assert(t, metadata.License != "")
-	assert.Assert(t, metadata.OS != "")
-	assert.Assert(t, metadata.Arch != "")
+	assert.Assert(t, is.Contains(metadata.License, "Copyright"))
+	assert.Equal(t, metadata.OS, runtime.GOOS)
+	assert.Equal(t, metadata.Arch, runtime.GOARCH)
 }
