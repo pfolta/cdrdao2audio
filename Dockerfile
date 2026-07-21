@@ -7,10 +7,10 @@ FROM --platform=${BUILDPLATFORM} golang:${GO_VERSION}-trixie AS builder-base
 WORKDIR /src
 
 FROM builder-base AS builder-deps
-COPY go.mod go.sum ./
+COPY go.mod go.sum Makefile ./
 RUN --mount=type=cache,target=/go/pkg/mod,sharing=locked \
     --mount=type=cache,target=/root/.cache/go-build,sharing=locked \
-    go mod download
+    make deps
 
 FROM builder-deps AS builder-validate
 RUN --mount=type=bind,target=.,readonly \

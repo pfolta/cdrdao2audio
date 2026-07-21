@@ -40,6 +40,10 @@ build:
 clean:
 	rm -rf "$(BUILD_DIR)"
 
+.PHONY: deps
+deps:
+	go mod download
+
 .PHONY: install
 install:
 	CGO_ENABLED=0 \
