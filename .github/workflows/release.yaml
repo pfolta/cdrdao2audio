@@ -78,12 +78,14 @@ jobs:
       - name: "Generate release notes"
         id: "release-notes"
         shell: "bash"
+        env:
+          REPOSITORY_URL: "https://github.com/${{ github.repository }}"
+          TAG: "${{ github.ref_name }}"
         run: |
-          repository="${{ github.repository }}"
-          current_tag="${{ github.ref_name }}"
-          previous_tag="$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || true)"
+          set -euo pipefail
 
-          log_format="- [`%h`](https://github.com/${repository}/commit/%H) %s"
+          previous_tag="$(git describe --tags --match "v[0-9]*" --abbrev=0 HEAD^ 2>/dev/null || true)"
+          log_format="- [`%h`](${REPOSITORY_URL}/commit/%H) %s"
 
           {
             echo "notes<<EOF"
@@ -94,12 +96,12 @@ jobs:
               git log --pretty=format:"${log_format}" "${previous_tag}..HEAD"
               echo
               echo
-              echo "**Full Changelog**: [`${previous_tag}...${current_tag}`](https://github.com/${repository}/compare/${previous_tag}...${current_tag})"
+              echo "**Full Changelog**: [`${previous_tag}...${TAG}`](${REPOSITORY_URL}/compare/${previous_tag}...${TAG})"
             else
               git log --pretty=format:"${log_format}"
               echo
               echo
-              echo "**Full Changelog**: [`${current_tag}`](https://github.com/${repository}/commits/${current_tag})"
+              echo "**Full Changelog**: [`${TAG}`](${REPOSITORY_URL}/commits/${TAG})"
             fi
 
             echo
