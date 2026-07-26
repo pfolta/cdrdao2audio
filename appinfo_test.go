@@ -28,7 +28,7 @@ import (
 	is "gotest.tools/v3/assert/cmp"
 )
 
-func TestGetMetadata(t *testing.T) {
+func TestGetAppInfo(t *testing.T) {
 	originalVersion := version
 	originalBuildDate := buildDate
 
@@ -41,12 +41,12 @@ func TestGetMetadata(t *testing.T) {
 	version = "v1.4.2-test"
 	buildDate = "2026-07-15T22:29:10Z"
 
-	metadata := GetMetadata()
+	appInfo := GetAppInfo()
 
-	assert.Equal(t, metadata.Name, programName)
-	assert.Equal(t, metadata.Version, "v1.4.2-test")
-	assert.Equal(t, metadata.BuildDate, "2026-07-15T22:29:10Z")
-	assert.Assert(t, is.Contains(metadata.License, "Copyright"))
-	assert.Equal(t, metadata.OS, runtime.GOOS)
-	assert.Equal(t, metadata.Arch, runtime.GOARCH)
+	assert.Equal(t, appInfo.Name, programName)
+	assert.Equal(t, appInfo.Version, "v1.4.2-test")
+	assert.Equal(t, appInfo.BuildDate, "2026-07-15T22:29:10Z")
+	assert.Assert(t, is.Contains(appInfo.License, "Copyright"))
+	assert.Equal(t, appInfo.OS, runtime.GOOS)
+	assert.Equal(t, appInfo.Arch, runtime.GOARCH)
 }

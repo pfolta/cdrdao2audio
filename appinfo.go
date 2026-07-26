@@ -28,7 +28,7 @@ import (
 
 const programName = "cdrdao2audio"
 
-// Metadata injected during build via -ldflags.
+// Build information injected via -ldflags.
 var (
 	buildDate = "unknown"
 	version   = "dev"
@@ -37,8 +37,8 @@ var (
 //go:embed LICENSE
 var license string
 
-// Metadata contains build and runtime information about the application.
-type Metadata struct {
+// AppInfo contains build and runtime information about the application.
+type AppInfo struct {
 	// Name is the application name.
 	Name string
 
@@ -58,9 +58,9 @@ type Metadata struct {
 	Arch string
 }
 
-// GetMetadata returns the application's build and runtime metadata.
-func GetMetadata() Metadata {
-	return Metadata{
+// GetAppInfo returns the application's build and runtime information.
+func GetAppInfo() AppInfo {
+	return AppInfo{
 		Name:      programName,
 		Version:   version,
 		BuildDate: buildDate,

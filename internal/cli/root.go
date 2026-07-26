@@ -27,10 +27,10 @@ import (
 )
 
 func NewRootCommand() *cobra.Command {
-	metadata := cdrdao2audio.GetMetadata()
+	appInfo := cdrdao2audio.GetAppInfo()
 
 	cmd := &cobra.Command{
-		Use:                metadata.Name,
+		Use:                appInfo.Name,
 		Short:              "Convert a cdrdao dump to individual audio tracks",
 		DisableSuggestions: true,
 		SilenceErrors:      true,
@@ -47,7 +47,7 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 
-	cmd.AddCommand(NewVersionCommand(metadata))
+	cmd.AddCommand(NewVersionCommand(appInfo))
 
 	return cmd
 }

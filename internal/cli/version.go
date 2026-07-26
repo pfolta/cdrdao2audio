@@ -34,14 +34,16 @@ type versionOptions struct {
 	short bool
 }
 
-func NewVersionCommand(metadata cdrdao2audio.Metadata) *cobra.Command {
+// NewVersionCommand creates a Cobra command that displays application version
+// information.
+func NewVersionCommand(appInfo cdrdao2audio.AppInfo) *cobra.Command {
 	opts := versionOptions{}
 	cmd := &cobra.Command{
 		Use:   "version",
 		Short: "Show version information",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			return runVersion(cmd.OutOrStdout(), metadata, opts)
+			return runVersion(cmd.OutOrStdout(), appInfo, opts)
 		},
 	}
 
@@ -53,23 +55,23 @@ func NewVersionCommand(metadata cdrdao2audio.Metadata) *cobra.Command {
 
 func runVersion(
 	w io.Writer,
-	metadata cdrdao2audio.Metadata,
+	appInfo cdrdao2audio.AppInfo,
 	opts versionOptions,
 ) error {
 	if opts.short {
-		_, err := fmt.Fprintln(w, strings.TrimPrefix(metadata.Version, "v"))
+		_, err := fmt.Fprintln(w, strings.TrimPrefix(appInfo.Version, "v"))
 		return err
 	}
 
 	_, err := fmt.Fprintf(
 		w,
 		"%s version %s-%s-%s (%s)\n\n%s\n",
-		metadata.Name,
-		metadata.Version,
-		metadata.OS,
-		metadata.Arch,
-		metadata.BuildDate,
-		metadata.License,
+		appInfo.Name,
+		appInfo.Version,
+		appInfo.OS,
+		appInfo.Arch,
+		appInfo.BuildDate,
+		appInfo.License,
 	)
 
 	return err

@@ -29,7 +29,7 @@ import (
 	"github.com/pfolta/cdrdao2audio"
 )
 
-var testMetadata = cdrdao2audio.Metadata{
+var testAppInfo = cdrdao2audio.AppInfo{
 	Name:      "cdrdao2audio",
 	Version:   "v1.4.2-test",
 	BuildDate: "2026-07-15T22:29:10Z",
@@ -43,7 +43,7 @@ const (
 	expectedLongVersion  = "cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)\n\nMIT\n"
 )
 
-func TestNewVersionCommand(t *testing.T) {
+func TestVersionCommand(t *testing.T) {
 	tests := []struct {
 		name        string
 		args        []string
@@ -62,7 +62,7 @@ func TestNewVersionCommand(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			out := new(bytes.Buffer)
 
-			cmd := NewVersionCommand(testMetadata)
+			cmd := NewVersionCommand(testAppInfo)
 			cmd.SetOut(out)
 			cmd.SetArgs(test.args)
 
