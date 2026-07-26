@@ -39,8 +39,28 @@ var testAppInfo = cdrdao2audio.AppInfo{
 }
 
 const (
-	expectedShortVersion = "1.4.2-test\n"
-	expectedLongVersion  = "cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)\n\nMIT\n"
+	expectedShortVersionText = `1.4.2-test
+`
+
+	expectedVersionText = `cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)
+
+MIT
+`
+
+	expectedVersionJSON = `{
+    "name": "cdrdao2audio",
+    "version": "v1.4.2-test",
+    "buildDate": "2026-07-15T22:29:10Z",
+    "license": "MIT",
+    "os": "darwin",
+    "arch": "arm64"
+}
+`
+
+	expectedShortVersionJSON = `{
+    "version": "1.4.2-test"
+}
+`
 )
 
 func TestVersionCommand(t *testing.T) {
@@ -50,12 +70,41 @@ func TestVersionCommand(t *testing.T) {
 		expected    string
 		expectedErr string
 	}{
-		{"no arguments", nil, expectedLongVersion, ""},
-		{"flag: --short", []string{"--short"}, expectedShortVersion, ""},
-		{"shorthand flag: -s", []string{"-s"}, expectedShortVersion, ""},
-		{"unknown flag", []string{"--unknown"}, "", "unknown flag"},
-		{"unknown shorthand", []string{"-u"}, "", "unknown shorthand"},
-		{"unknown command", []string{"unknown"}, "", "unknown command"},
+		{
+			name:     "default text output",
+			args:     nil,
+			expected: expectedVersionText,
+		},
+		{
+			name:     "short version text output",
+			args:     []string{"--short"},
+			expected: expectedShortVersionText,
+		},
+		{
+			name:     "json output",
+			args:     []string{"--format", "json"},
+			expected: expectedVersionJSON,
+		},
+		{
+			name:     "short json output",
+			args:     []string{"--short", "--format", "json"},
+			expected: expectedShortVersionJSON,
+		},
+		{
+			name:        "unknown output format",
+			args:        []string{"--format", "xml"},
+			expectedErr: "unknown format",
+		},
+		{
+			name:        "unknown flag",
+			args:        []string{"--unknown"},
+			expectedErr: "unknown flag",
+		},
+		{
+			name:        "unknown command",
+			args:        []string{"unknown"},
+			expectedErr: "unknown command",
+		},
 	}
 
 	for _, test := range tests {

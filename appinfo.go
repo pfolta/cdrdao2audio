@@ -22,6 +22,7 @@ package cdrdao2audio
 
 import (
 	_ "embed"
+	"fmt"
 	"runtime"
 	"strings"
 )
@@ -40,22 +41,49 @@ var license string
 // AppInfo contains build and runtime information about the application.
 type AppInfo struct {
 	// Name is the application name.
-	Name string
+	Name string `json:"name"`
 
 	// Version is the application version injected at build time.
-	Version string
+	Version string `json:"version"`
 
 	// BuildDate is the timestamp when the binary was built.
-	BuildDate string
+	BuildDate string `json:"buildDate"`
 
 	// License contains the application license text.
-	License string
+	License string `json:"license"`
 
 	// OS is the target operating system.
-	OS string
+	OS string `json:"os"`
 
 	// Arch is the target architecture.
-	Arch string
+	Arch string `json:"arch"`
+}
+
+// ShortVersion returns the raw application's version number.
+func (appInfo AppInfo) ShortVersion() ShortVersion {
+	return ShortVersion{Version: strings.TrimPrefix(appInfo.Version, "v")}
+}
+
+// String formats the application's build and runtime information.
+func (appInfo AppInfo) String() string {
+	return fmt.Sprintf("%s version %s-%s-%s (%s)\n\n%s",
+		appInfo.Name,
+		appInfo.Version,
+		appInfo.OS,
+		appInfo.Arch,
+		appInfo.BuildDate,
+		appInfo.License,
+	)
+}
+
+// ShortVersion contains the raw application's version number.
+type ShortVersion struct {
+	Version string `json:"version"`
+}
+
+// String formats the application's raw version number.
+func (shortVersion ShortVersion) String() string {
+	return shortVersion.Version
 }
 
 // GetAppInfo returns the application's build and runtime information.

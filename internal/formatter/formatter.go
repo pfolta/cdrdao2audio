@@ -18,66 +18,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package cli
+package formatter
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
-
-	"github.com/spf13/cobra"
-
-	"github.com/pfolta/cdrdao2audio"
-	"github.com/pfolta/cdrdao2audio/internal/formatter"
 )
 
-type versionOptions struct {
-	short  bool
-	format string
+type Format string
+
+const (
+	JSON Format = "json"
+	TEXT Format = "text"
+)
+
+var ErrUnknownFormat = errors.New("unknown format")
+
+// Formatter writes values to an [io.Writer].
+type Formatter interface {
+	// Write writes v to w using the formatter's output format.
+	Write(w io.Writer, v any) error
 }
 
-// NewVersionCommand creates a Cobra command that displays application version
-// information.
-func NewVersionCommand(appInfo cdrdao2audio.AppInfo) *cobra.Command {
-	opts := versionOptions{}
-	cmd := &cobra.Command{
-		Use:   "version",
-		Short: "Show version information",
-		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, _ []string) error {
-			return runVersion(cmd.OutOrStdout(), appInfo, opts)
-		},
+// NewFormatter creates a formatter for the requested format.
+func NewFormatter(format Format) (Formatter, error) {
+	switch Format(strings.ToLower(string(format))) {
+	case JSON:
+		return NewJSONFormatter(), nil
+
+	case TEXT:
+		return NewTextFormatter(), nil
+
+	default:
+		return nil, fmt.Errorf("%w: %s", ErrUnknownFormat, format)
 	}
-
-	flags := cmd.Flags()
-	flags.StringVarP(
-		&opts.format,
-		"format",
-		"f",
-		string(formatter.TEXT),
-		fmt.Sprintf(
-			"output format: [%s]",
-			strings.Join(formatter.Formats(), "|"),
-		),
-	)
-	flags.BoolVarP(&opts.short, "short", "s", false, "show version number only")
-
-	return cmd
 }
 
-func runVersion(
-	w io.Writer,
-	appInfo cdrdao2audio.AppInfo,
-	opts versionOptions,
-) error {
-	f, err := formatter.NewFormatter(formatter.Format(opts.format))
-	if err != nil {
-		return err
+// Formats returns the list of supported output formats.
+func Formats() []string {
+	return []string{
+		string(TEXT),
+		string(JSON),
 	}
-
-	if opts.short {
-		return f.Write(w, appInfo.ShortVersion())
-	}
-
-	return f.Write(w, appInfo)
 }

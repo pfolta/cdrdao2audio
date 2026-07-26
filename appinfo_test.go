@@ -50,3 +50,26 @@ func TestGetAppInfo(t *testing.T) {
 	assert.Equal(t, appInfo.OS, runtime.GOOS)
 	assert.Equal(t, appInfo.Arch, runtime.GOARCH)
 }
+
+func TestAppInfoString(t *testing.T) {
+	appInfo := AppInfo{
+		Name:      "cdrdao2audio",
+		Version:   "v1.4.2-test",
+		BuildDate: "2026-07-15T22:29:10Z",
+		License:   "MIT",
+		OS:        "darwin",
+		Arch:      "arm64",
+	}
+
+	assert.Equal(t, appInfo.String(), "cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)\n\nMIT")
+}
+
+func TestAppInfoShortVersion(t *testing.T) {
+	appInfo := AppInfo{Version: "v1.4.2-test"}
+	assert.Equal(t, appInfo.ShortVersion(), ShortVersion{Version: "1.4.2-test"})
+}
+
+func TestShortVersionString(t *testing.T) {
+	version := ShortVersion{Version: "1.4.2-test"}
+	assert.Equal(t, version.String(), "1.4.2-test")
+}
