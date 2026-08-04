@@ -89,7 +89,7 @@ jobs:
 
           {
             echo "notes<<EOF"
-            echo "# Changelog"
+            echo "## Changelog"
             echo
 
             if [ -n "${previous_tag}" ]; then
