@@ -62,6 +62,11 @@ func TestNewFormatter(t *testing.T) {
 			expected: &JSONFormatter{},
 		},
 		{
+			name:     "yaml",
+			format:   YAML,
+			expected: &YAMLFormatter{},
+		},
+		{
 			name:     "text is case insensitive",
 			format:   "TeXt",
 			expected: &TextFormatter{},
@@ -70,6 +75,11 @@ func TestNewFormatter(t *testing.T) {
 			name:     "json is case insensitive",
 			format:   "JsOn",
 			expected: &JSONFormatter{},
+		},
+		{
+			name:     "yaml is case insensitive",
+			format:   "yAML",
+			expected: &YAMLFormatter{},
 		},
 		{
 			name:        "unknown format",
