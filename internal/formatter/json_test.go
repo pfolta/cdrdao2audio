@@ -29,6 +29,13 @@ import (
 	is "gotest.tools/v3/assert/cmp"
 )
 
+type testJSONInput struct {
+	A struct {
+		B int    `json:"b"`
+		C string `json:"c"`
+	} `json:"a"`
+}
+
 func TestJSONFormatterWrite(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -36,75 +43,95 @@ func TestJSONFormatterWrite(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "default formatted json",
-			expected: `{
-    "name": "cdrdao2audio",
-    "version": "1.0.0"
-}
-`,
+			name:     "default formatted json",
+			expected: "{\n    \"a\": {\n        \"b\": 1,\n        \"c\": \"test\"\n    }\n}\n",
 		},
 		{
-			name: "compact json",
-			opts: []JSONOption{CompactJSON},
-			expected: `{"name":"cdrdao2audio","version":"1.0.0"}
-`,
+			name:     "compact json",
+			opts:     []JSONOption{CompactJSON},
+			expected: `{"a":{"b":1,"c":"test"}}` + "\n",
 		},
 	}
 
-	value := map[string]string{
-		"name":    "cdrdao2audio",
-		"version": "1.0.0",
-	}
+	var input testJSONInput
+	input.A.B = 1
+	input.A.C = "test"
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			out := new(bytes.Buffer)
 			f := NewJSONFormatter(test.opts...)
 
-			err := f.Write(out, value)
+			err := f.Write(out, input)
 
 			assert.NilError(t, err)
-			assert.Equal(t, out.String(), test.expected)
+			assert.Assert(t, is.Equal(out.String(), test.expected))
 		})
 	}
+}
+
+func TestJSONFormatterOptionsOverrideDefaults(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	f := NewJSONFormatter(func(enc *json.Encoder) {
+		enc.SetIndent("", "  ")
+	})
+
+	var input testJSONInput
+	input.A.B = 1
+	input.A.C = "test"
+
+	expected := "{\n  \"a\": {\n    \"b\": 1,\n    \"c\": \"test\"\n  }\n}\n"
+
+	err := f.Write(out, input)
+
+	assert.NilError(t, err)
+	assert.Assert(t, is.Equal(out.String(), expected))
 }
 
 func TestJSONFormatterDisablesHTMLEscape(t *testing.T) {
 	out := new(bytes.Buffer)
 	f := NewJSONFormatter()
 
-	err := f.Write(out, map[string]string{
+	input := map[string]string{
 		"html": "<script>",
-	})
+	}
+
+	expected := "{\n    \"html\": \"<script>\"\n}\n"
+
+	err := f.Write(out, input)
 
 	assert.NilError(t, err)
-	assert.Assert(t, is.Contains(out.String(), "<script>"))
+	assert.Assert(t, is.Equal(out.String(), expected))
 }
 
 func TestJSONFormatterWritesValidJSON(t *testing.T) {
 	out := new(bytes.Buffer)
 	f := NewJSONFormatter()
 
-	err := f.Write(out, map[string]string{
-		"name": "cdrdao2audio",
-	})
+	var input testJSONInput
+	input.A.B = 1
+	input.A.C = "test"
+
+	err := f.Write(out, input)
 
 	assert.NilError(t, err)
 
-	var result map[string]string
+	var result testJSONInput
 
 	err = json.Unmarshal(out.Bytes(), &result)
 
 	assert.NilError(t, err)
-	assert.Equal(t, result["name"], "cdrdao2audio")
+	assert.Assert(t, is.Equal(result.A.C, "test"))
 }
 
 func TestJSONFormatterWriterError(t *testing.T) {
 	f := NewJSONFormatter()
 
-	err := f.Write(newErrorWriter(), map[string]string{
-		"name": "cdrdao2audio",
-	})
+	var input testJSONInput
+	input.A.B = 1
+	input.A.C = "test"
 
+	err := f.Write(newErrorWriter(), input)
 	assert.ErrorIs(t, err, errWriteFailed)
 }

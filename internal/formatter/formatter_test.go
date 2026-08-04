@@ -96,7 +96,7 @@ func TestNewFormatter(t *testing.T) {
 
 func TestFormats(t *testing.T) {
 	formats := Formats()
-	expected := []string{"text", "json"}
+	expected := []string{"text", "json", "yaml"}
 
 	assert.Equal(t, len(formats), len(expected))
 

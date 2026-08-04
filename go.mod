@@ -3,6 +3,7 @@ module github.com/pfolta/cdrdao2audio
 go 1.26.5
 
 require (
+	github.com/goccy/go-yaml v1.19.2
 	github.com/spf13/cobra v1.10.2
 	gotest.tools/v3 v3.5.2
 )

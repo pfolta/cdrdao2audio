@@ -32,6 +32,7 @@ type Format string
 const (
 	JSON Format = "json"
 	TEXT Format = "text"
+	YAML Format = "yaml"
 )
 
 var ErrUnknownFormat = errors.New("unknown format")
@@ -51,6 +52,9 @@ func NewFormatter(format Format) (Formatter, error) {
 	case TEXT:
 		return NewTextFormatter(), nil
 
+	case YAML:
+		return NewYAMLFormatter(), nil
+
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrUnknownFormat, format)
 	}
@@ -61,5 +65,6 @@ func Formats() []string {
 	return []string{
 		string(TEXT),
 		string(JSON),
+		string(YAML),
 	}
 }

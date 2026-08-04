@@ -41,22 +41,22 @@ var license string
 // AppInfo contains build and runtime information about the application.
 type AppInfo struct {
 	// Name is the application name.
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 
 	// Version is the application version injected at build time.
-	Version string `json:"version"`
+	Version string `json:"version" yaml:"version"`
 
 	// BuildDate is the timestamp when the binary was built.
-	BuildDate string `json:"buildDate"`
+	BuildDate string `json:"buildDate" yaml:"buildDate"`
 
 	// License contains the application license text.
-	License string `json:"license"`
+	License string `json:"license" yaml:"license"`
 
 	// OS is the target operating system.
-	OS string `json:"os"`
+	OS string `json:"os" yaml:"os"`
 
 	// Arch is the target architecture.
-	Arch string `json:"arch"`
+	Arch string `json:"arch" yaml:"arch"`
 }
 
 // ShortVersion returns the raw application's version number.
@@ -78,7 +78,7 @@ func (appInfo AppInfo) String() string {
 
 // ShortVersion contains the raw application's version number.
 type ShortVersion struct {
-	Version string `json:"version"`
+	Version string `json:"version" yaml:"version"`
 }
 
 // String formats the application's raw version number.

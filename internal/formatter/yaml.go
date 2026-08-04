@@ -21,53 +21,39 @@
 package formatter
 
 import (
-	"encoding/json"
 	"io"
+
+	"github.com/goccy/go-yaml"
 )
 
-// JSONOption configures the JSON encoder.
-type JSONOption func(*json.Encoder)
-
-func defaultJSONOptions() []JSONOption {
-	return []JSONOption{
-		// Don't escape &, <, and >
-		func(enc *json.Encoder) {
-			enc.SetEscapeHTML(false)
-		},
-
-		// Indent using 4 spaces
-		func(enc *json.Encoder) {
-			enc.SetIndent("", "    ")
-		},
+func defaultYAMLOptions() []yaml.EncodeOption {
+	return []yaml.EncodeOption{
+		// Indent using 2 spaces
+		yaml.Indent(2),
 	}
 }
 
-// JSONFormatter writes values as JSON.
-type JSONFormatter struct {
-	opts []JSONOption
+// YAMLFormatter writes values as complete YAML documents.
+type YAMLFormatter struct {
+	opts []yaml.EncodeOption
 }
 
-// NewJSONFormatter creates a formatter that writes JSON.
-func NewJSONFormatter(opts ...JSONOption) *JSONFormatter {
-	return &JSONFormatter{
-		opts: append(defaultJSONOptions(), opts...),
+// NewYAMLFormatter creates a formatter that writes YAML.
+func NewYAMLFormatter(opts ...yaml.EncodeOption) *YAMLFormatter {
+	return &YAMLFormatter{
+		opts: append(defaultYAMLOptions(), opts...),
 	}
 }
 
-// CompactJSON disables indentation.
-func CompactJSON(enc *json.Encoder) {
-	enc.SetIndent("", "")
-}
-
-// Write writes v as formatted JSON followed by a newline.
-func (f *JSONFormatter) Write(w io.Writer, v any) error {
-	enc := json.NewEncoder(w)
-
-	for _, opt := range f.opts {
-		if opt != nil {
-			opt(enc)
-		}
+// Write writes v as a YAML document beginning with "---" and
+// ending with a newline.
+func (f *YAMLFormatter) Write(w io.Writer, v any) error {
+	if _, err := io.WriteString(w, "---\n"); err != nil {
+		return err
 	}
+
+	enc := yaml.NewEncoder(w, f.opts...)
+	defer enc.Close()
 
 	return enc.Encode(v)
 }

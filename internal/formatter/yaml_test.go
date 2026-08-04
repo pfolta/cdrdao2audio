@@ -21,53 +21,61 @@
 package formatter
 
 import (
-	"encoding/json"
-	"io"
+	"bytes"
+	"testing"
+
+	"github.com/goccy/go-yaml"
+	"gotest.tools/v3/assert"
+	is "gotest.tools/v3/assert/cmp"
 )
 
-// JSONOption configures the JSON encoder.
-type JSONOption func(*json.Encoder)
-
-func defaultJSONOptions() []JSONOption {
-	return []JSONOption{
-		// Don't escape &, <, and >
-		func(enc *json.Encoder) {
-			enc.SetEscapeHTML(false)
-		},
-
-		// Indent using 4 spaces
-		func(enc *json.Encoder) {
-			enc.SetIndent("", "    ")
-		},
-	}
+type testYAMLInput struct {
+	A struct {
+		B int    `yaml:"b"`
+		C string `yaml:"c"`
+	} `yaml:"a"`
 }
 
-// JSONFormatter writes values as JSON.
-type JSONFormatter struct {
-	opts []JSONOption
+func TestYAMLFormatterWrite(t *testing.T) {
+	out := new(bytes.Buffer)
+	f := NewYAMLFormatter()
+
+	var input testYAMLInput
+	input.A.B = 1
+	input.A.C = "test"
+	expected := "---\na:\n  b: 1\n  c: test\n"
+
+	err := f.Write(out, input)
+
+	assert.NilError(t, err)
+	assert.Assert(t, is.Equal(out.String(), expected))
 }
 
-// NewJSONFormatter creates a formatter that writes JSON.
-func NewJSONFormatter(opts ...JSONOption) *JSONFormatter {
-	return &JSONFormatter{
-		opts: append(defaultJSONOptions(), opts...),
-	}
+func TestYAMLFormatterOptionsOverrideDefaults(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	f := NewYAMLFormatter(
+		yaml.Indent(4),
+	)
+
+	var input testYAMLInput
+	input.A.B = 1
+	input.A.C = "test"
+	expected := "---\na:\n    b: 1\n    c: test\n"
+
+	err := f.Write(out, input)
+
+	assert.NilError(t, err)
+	assert.Assert(t, is.Equal(out.String(), expected))
 }
 
-// CompactJSON disables indentation.
-func CompactJSON(enc *json.Encoder) {
-	enc.SetIndent("", "")
-}
+func TestYAMLFormatterWriterError(t *testing.T) {
+	f := NewYAMLFormatter()
 
-// Write writes v as formatted JSON followed by a newline.
-func (f *JSONFormatter) Write(w io.Writer, v any) error {
-	enc := json.NewEncoder(w)
+	var input testYAMLInput
+	input.A.B = 1
+	input.A.C = "test"
 
-	for _, opt := range f.opts {
-		if opt != nil {
-			opt(enc)
-		}
-	}
-
-	return enc.Encode(v)
+	err := f.Write(newErrorWriter(), input)
+	assert.ErrorIs(t, err, errWriteFailed)
 }

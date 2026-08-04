@@ -39,14 +39,7 @@ var testAppInfo = cdrdao2audio.AppInfo{
 }
 
 const (
-	expectedShortVersionText = `1.4.2-test
-`
-
-	expectedVersionText = `cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)
-
-MIT
-`
-
+	expectedVersionText = "cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)\n\nMIT\n"
 	expectedVersionJSON = `{
     "name": "cdrdao2audio",
     "version": "v1.4.2-test",
@@ -56,11 +49,18 @@ MIT
     "arch": "arm64"
 }
 `
-
-	expectedShortVersionJSON = `{
-    "version": "1.4.2-test"
-}
+	expectedVersionYAML = `---
+name: cdrdao2audio
+version: v1.4.2-test
+buildDate: "2026-07-15T22:29:10Z"
+license: MIT
+os: darwin
+arch: arm64
 `
+
+	expectedShortVersionText = "1.4.2-test\n"
+	expectedShortVersionJSON = "{\n    \"version\": \"1.4.2-test\"\n}\n"
+	expectedShortVersionYAML = "---\nversion: 1.4.2-test\n"
 )
 
 func TestVersionCommand(t *testing.T) {
@@ -89,6 +89,16 @@ func TestVersionCommand(t *testing.T) {
 			name:     "short json output",
 			args:     []string{"--short", "--format", "json"},
 			expected: expectedShortVersionJSON,
+		},
+		{
+			name:     "yaml output",
+			args:     []string{"--format", "yaml"},
+			expected: expectedVersionYAML,
+		},
+		{
+			name:     "short yaml output",
+			args:     []string{"--short", "--format", "yaml"},
+			expected: expectedShortVersionYAML,
 		},
 		{
 			name:        "unknown output format",
