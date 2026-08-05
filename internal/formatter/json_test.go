@@ -38,18 +38,18 @@ type testJSONInput struct {
 
 func TestJSONFormatterWrite(t *testing.T) {
 	tests := []struct {
-		name     string
-		opts     []JSONOption
-		expected string
+		name string
+		opts []JSONOption
+		want string
 	}{
 		{
-			name:     "default formatted json",
-			expected: "{\n    \"a\": {\n        \"b\": 1,\n        \"c\": \"test\"\n    }\n}\n",
+			name: "default formatted json",
+			want: "{\n    \"a\": {\n        \"b\": 1,\n        \"c\": \"test\"\n    }\n}\n",
 		},
 		{
-			name:     "compact json",
-			opts:     []JSONOption{CompactJSON},
-			expected: `{"a":{"b":1,"c":"test"}}` + "\n",
+			name: "compact json",
+			opts: []JSONOption{CompactJSON},
+			want: `{"a":{"b":1,"c":"test"}}` + "\n",
 		},
 	}
 
@@ -63,9 +63,8 @@ func TestJSONFormatterWrite(t *testing.T) {
 			f := NewJSONFormatter(test.opts...)
 
 			err := f.Write(out, input)
-
 			assert.NilError(t, err)
-			assert.Assert(t, is.Equal(out.String(), test.expected))
+			assert.Assert(t, is.Equal(out.String(), test.want))
 		})
 	}
 }
@@ -81,12 +80,11 @@ func TestJSONFormatterOptionsOverrideDefaults(t *testing.T) {
 	input.A.B = 1
 	input.A.C = "test"
 
-	expected := "{\n  \"a\": {\n    \"b\": 1,\n    \"c\": \"test\"\n  }\n}\n"
+	want := "{\n  \"a\": {\n    \"b\": 1,\n    \"c\": \"test\"\n  }\n}\n"
 
 	err := f.Write(out, input)
-
 	assert.NilError(t, err)
-	assert.Assert(t, is.Equal(out.String(), expected))
+	assert.Assert(t, is.Equal(out.String(), want))
 }
 
 func TestJSONFormatterDisablesHTMLEscape(t *testing.T) {
@@ -97,12 +95,11 @@ func TestJSONFormatterDisablesHTMLEscape(t *testing.T) {
 		"html": "<script>",
 	}
 
-	expected := "{\n    \"html\": \"<script>\"\n}\n"
+	want := "{\n    \"html\": \"<script>\"\n}\n"
 
 	err := f.Write(out, input)
-
 	assert.NilError(t, err)
-	assert.Assert(t, is.Equal(out.String(), expected))
+	assert.Assert(t, is.Equal(out.String(), want))
 }
 
 func TestJSONFormatterWritesValidJSON(t *testing.T) {
@@ -114,7 +111,6 @@ func TestJSONFormatterWritesValidJSON(t *testing.T) {
 	input.A.C = "test"
 
 	err := f.Write(out, input)
-
 	assert.NilError(t, err)
 
 	var result testJSONInput
@@ -127,11 +123,6 @@ func TestJSONFormatterWritesValidJSON(t *testing.T) {
 
 func TestJSONFormatterWriterError(t *testing.T) {
 	f := NewJSONFormatter()
-
-	var input testJSONInput
-	input.A.B = 1
-	input.A.C = "test"
-
-	err := f.Write(newErrorWriter(), input)
+	err := f.Write(newErrorWriter(), testJSONInput{})
 	assert.ErrorIs(t, err, errWriteFailed)
 }

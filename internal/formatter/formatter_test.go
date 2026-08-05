@@ -46,45 +46,45 @@ func newErrorWriter() io.Writer {
 
 func TestNewFormatter(t *testing.T) {
 	tests := []struct {
-		name        string
-		format      Format
-		expected    any
-		expectedErr error
+		name    string
+		format  Format
+		want    any
+		wantErr error
 	}{
 		{
-			name:     "text",
-			format:   TEXT,
-			expected: &TextFormatter{},
+			name:   "text",
+			format: TEXT,
+			want:   &TextFormatter{},
 		},
 		{
-			name:     "json",
-			format:   JSON,
-			expected: &JSONFormatter{},
+			name:   "json",
+			format: JSON,
+			want:   &JSONFormatter{},
 		},
 		{
-			name:     "yaml",
-			format:   YAML,
-			expected: &YAMLFormatter{},
+			name:   "yaml",
+			format: YAML,
+			want:   &YAMLFormatter{},
 		},
 		{
-			name:     "text is case insensitive",
-			format:   "TeXt",
-			expected: &TextFormatter{},
+			name:   "text is case insensitive",
+			format: "TeXt",
+			want:   &TextFormatter{},
 		},
 		{
-			name:     "json is case insensitive",
-			format:   "JsOn",
-			expected: &JSONFormatter{},
+			name:   "json is case insensitive",
+			format: "JsOn",
+			want:   &JSONFormatter{},
 		},
 		{
-			name:     "yaml is case insensitive",
-			format:   "yAML",
-			expected: &YAMLFormatter{},
+			name:   "yaml is case insensitive",
+			format: "yAML",
+			want:   &YAMLFormatter{},
 		},
 		{
-			name:        "unknown format",
-			format:      "xml",
-			expectedErr: ErrUnknownFormat,
+			name:    "unknown format",
+			format:  "xml",
+			wantErr: ErrUnknownFormat,
 		},
 	}
 
@@ -92,25 +92,24 @@ func TestNewFormatter(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			f, err := NewFormatter(test.format)
 
-			if test.expectedErr != nil {
-				assert.ErrorIs(t, err, test.expectedErr)
+			if test.wantErr != nil {
+				assert.ErrorIs(t, err, test.wantErr)
 				assert.Assert(t, f == nil)
-				return
+			} else {
+				assert.NilError(t, err)
+				assert.Assert(t, is.Equal(reflect.TypeOf(f), reflect.TypeOf(test.want)))
 			}
-
-			assert.NilError(t, err)
-			assert.Assert(t, is.Equal(reflect.TypeOf(f), reflect.TypeOf(test.expected)))
 		})
 	}
 }
 
 func TestFormats(t *testing.T) {
 	formats := Formats()
-	expected := []string{"text", "json", "yaml"}
+	want := []string{"text", "json", "yaml"}
 
-	assert.Equal(t, len(formats), len(expected))
+	assert.Equal(t, len(formats), len(want))
 
-	for _, format := range expected {
+	for _, format := range want {
 		assert.Assert(t, is.Contains(formats, format))
 	}
 }

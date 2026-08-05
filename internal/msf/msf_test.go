@@ -71,8 +71,8 @@ func TestMust(t *testing.T) {
 
 func TestParse(t *testing.T) {
 	tests := []struct {
-		in       string
-		expected MSF
+		in   string
+		want MSF
 	}{
 		{"0", MSF{0}},
 		{"00:00:00", MSF{0}},
@@ -88,7 +88,7 @@ func TestParse(t *testing.T) {
 		t.Run(fmt.Sprintf("Parse(%s)", test.in), func(t *testing.T) {
 			actual, err := Parse(test.in)
 			assert.NilError(t, err)
-			assert.Assert(t, is.Equal(actual, test.expected))
+			assert.Assert(t, is.Equal(actual, test.want))
 		})
 	}
 }
@@ -132,8 +132,8 @@ func TestMustParse(t *testing.T) {
 
 func TestLBA(t *testing.T) {
 	tests := []struct {
-		in       MSF
-		expected uint32
+		in   MSF
+		want uint32
 	}{
 		{MSF{}, 0},
 		{MSF{0}, 0},
@@ -144,15 +144,15 @@ func TestLBA(t *testing.T) {
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("MSF{%d}.LBA()", test.in.LBA()), func(t *testing.T) {
 			actual := test.in.LBA()
-			assert.Assert(t, is.Equal(actual, test.expected))
+			assert.Assert(t, is.Equal(actual, test.want))
 		})
 	}
 }
 
 func TestSectorBytes(t *testing.T) {
 	tests := []struct {
-		in       MSF
-		expected uint32
+		in   MSF
+		want uint32
 	}{
 		{MSF{}, 0},
 		{MSF{0}, 0},
@@ -163,16 +163,16 @@ func TestSectorBytes(t *testing.T) {
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("MSF{%d}.SectorBytes()", test.in.LBA()), func(t *testing.T) {
 			actual := test.in.SectorBytes()
-			assert.Assert(t, is.Equal(actual, test.expected))
+			assert.Assert(t, is.Equal(actual, test.want))
 		})
 	}
 }
 
 func TestAdd(t *testing.T) {
 	tests := []struct {
-		a        MSF
-		b        MSF
-		expected MSF
+		a    MSF
+		b    MSF
+		want MSF
 	}{
 		{MSF{}, MSF{}, MSF{}},
 		{MSF{0}, MSF{0}, MSF{0}},
@@ -185,7 +185,7 @@ func TestAdd(t *testing.T) {
 		t.Run(fmt.Sprintf("MSF{%d}.Add(MSF{%d})", test.a.LBA(), test.b.LBA()), func(t *testing.T) {
 			actual, err := test.a.Add(test.b)
 			assert.NilError(t, err)
-			assert.Assert(t, is.Equal(actual, test.expected))
+			assert.Assert(t, is.Equal(actual, test.want))
 		})
 	}
 }
@@ -210,9 +210,9 @@ func TestAddErrors(t *testing.T) {
 
 func TestSub(t *testing.T) {
 	tests := []struct {
-		a        MSF
-		b        MSF
-		expected MSF
+		a    MSF
+		b    MSF
+		want MSF
 	}{
 		{MSF{}, MSF{}, MSF{}},
 		{MSF{0}, MSF{0}, MSF{0}},
@@ -226,7 +226,7 @@ func TestSub(t *testing.T) {
 		t.Run(fmt.Sprintf("MSF{%d}.Sub(MSF{%d})", test.a.LBA(), test.b.LBA()), func(t *testing.T) {
 			actual, err := test.a.Sub(test.b)
 			assert.NilError(t, err)
-			assert.Assert(t, is.Equal(actual, test.expected))
+			assert.Assert(t, is.Equal(actual, test.want))
 		})
 	}
 }
@@ -251,8 +251,8 @@ func TestSubErrors(t *testing.T) {
 
 func TestString(t *testing.T) {
 	tests := []struct {
-		in       MSF
-		expected string
+		in   MSF
+		want string
 	}{
 		{MSF{}, "00:00:00"},
 		{MSF{0}, "00:00:00"},
@@ -263,7 +263,7 @@ func TestString(t *testing.T) {
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("MSF{%d}.String()", test.in.LBA()), func(t *testing.T) {
 			actual := test.in.String()
-			assert.Assert(t, is.Equal(actual, test.expected))
+			assert.Assert(t, is.Equal(actual, test.want))
 		})
 	}
 }

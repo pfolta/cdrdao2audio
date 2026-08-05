@@ -43,12 +43,11 @@ func TestYAMLFormatterWrite(t *testing.T) {
 	var input testYAMLInput
 	input.A.B = 1
 	input.A.C = "test"
-	expected := "---\na:\n  b: 1\n  c: test\n"
+	want := "---\na:\n  b: 1\n  c: test\n"
 
 	err := f.Write(out, input)
-
 	assert.NilError(t, err)
-	assert.Assert(t, is.Equal(out.String(), expected))
+	assert.Assert(t, is.Equal(out.String(), want))
 }
 
 func TestYAMLFormatterOptionsOverrideDefaults(t *testing.T) {
@@ -61,21 +60,15 @@ func TestYAMLFormatterOptionsOverrideDefaults(t *testing.T) {
 	var input testYAMLInput
 	input.A.B = 1
 	input.A.C = "test"
-	expected := "---\na:\n    b: 1\n    c: test\n"
+	want := "---\na:\n    b: 1\n    c: test\n"
 
 	err := f.Write(out, input)
-
 	assert.NilError(t, err)
-	assert.Assert(t, is.Equal(out.String(), expected))
+	assert.Assert(t, is.Equal(out.String(), want))
 }
 
 func TestYAMLFormatterWriterError(t *testing.T) {
 	f := NewYAMLFormatter()
-
-	var input testYAMLInput
-	input.A.B = 1
-	input.A.C = "test"
-
-	err := f.Write(newErrorWriter(), input)
+	err := f.Write(newErrorWriter(), testYAMLInput{})
 	assert.ErrorIs(t, err, errWriteFailed)
 }

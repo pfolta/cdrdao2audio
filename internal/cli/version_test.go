@@ -39,8 +39,8 @@ var testAppInfo = cdrdao2audio.AppInfo{
 }
 
 const (
-	expectedVersionText = "cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)\n\nMIT\n"
-	expectedVersionJSON = `{
+	wantVersionText = "cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)\n\nMIT\n"
+	wantVersionJSON = `{
     "name": "cdrdao2audio",
     "version": "v1.4.2-test",
     "buildDate": "2026-07-15T22:29:10Z",
@@ -49,7 +49,7 @@ const (
     "arch": "arm64"
 }
 `
-	expectedVersionYAML = `---
+	wantVersionYAML = `---
 name: cdrdao2audio
 version: v1.4.2-test
 buildDate: "2026-07-15T22:29:10Z"
@@ -58,62 +58,62 @@ os: darwin
 arch: arm64
 `
 
-	expectedShortVersionText = "1.4.2-test\n"
-	expectedShortVersionJSON = "{\n    \"version\": \"1.4.2-test\"\n}\n"
-	expectedShortVersionYAML = "---\nversion: 1.4.2-test\n"
+	wantShortVersionText = "1.4.2-test\n"
+	wantShortVersionJSON = "{\n    \"version\": \"1.4.2-test\"\n}\n"
+	wantShortVersionYAML = "---\nversion: 1.4.2-test\n"
 )
 
 func TestVersionCommand(t *testing.T) {
 	tests := []struct {
-		name        string
-		args        []string
-		expected    string
-		expectedErr string
+		name    string
+		args    []string
+		want    string
+		wantErr string
 	}{
 		{
-			name:     "default text output",
-			args:     nil,
-			expected: expectedVersionText,
+			name: "default text output",
+			args: nil,
+			want: wantVersionText,
 		},
 		{
-			name:     "short version text output",
-			args:     []string{"--short"},
-			expected: expectedShortVersionText,
+			name: "short version text output",
+			args: []string{"--short"},
+			want: wantShortVersionText,
 		},
 		{
-			name:     "json output",
-			args:     []string{"--format", "json"},
-			expected: expectedVersionJSON,
+			name: "json output",
+			args: []string{"--format", "json"},
+			want: wantVersionJSON,
 		},
 		{
-			name:     "short json output",
-			args:     []string{"--short", "--format", "json"},
-			expected: expectedShortVersionJSON,
+			name: "short json output",
+			args: []string{"--short", "--format", "json"},
+			want: wantShortVersionJSON,
 		},
 		{
-			name:     "yaml output",
-			args:     []string{"--format", "yaml"},
-			expected: expectedVersionYAML,
+			name: "yaml output",
+			args: []string{"--format", "yaml"},
+			want: wantVersionYAML,
 		},
 		{
-			name:     "short yaml output",
-			args:     []string{"--short", "--format", "yaml"},
-			expected: expectedShortVersionYAML,
+			name: "short yaml output",
+			args: []string{"--short", "--format", "yaml"},
+			want: wantShortVersionYAML,
 		},
 		{
-			name:        "unknown output format",
-			args:        []string{"--format", "xml"},
-			expectedErr: "unknown format",
+			name:    "unknown output format",
+			args:    []string{"--format", "xml"},
+			wantErr: "unknown format",
 		},
 		{
-			name:        "unknown flag",
-			args:        []string{"--unknown"},
-			expectedErr: "unknown flag",
+			name:    "unknown flag",
+			args:    []string{"--unknown"},
+			wantErr: "unknown flag",
 		},
 		{
-			name:        "unknown command",
-			args:        []string{"unknown"},
-			expectedErr: "unknown command",
+			name:    "unknown command",
+			args:    []string{"unknown"},
+			wantErr: "unknown command",
 		},
 	}
 
@@ -127,11 +127,11 @@ func TestVersionCommand(t *testing.T) {
 
 			err := cmd.Execute()
 
-			if test.expectedErr == "" {
+			if test.wantErr == "" {
 				assert.NilError(t, err)
-				assert.Equal(t, out.String(), test.expected)
+				assert.Equal(t, out.String(), test.want)
 			} else {
-				assert.ErrorContains(t, err, test.expectedErr)
+				assert.ErrorContains(t, err, test.wantErr)
 			}
 		})
 	}

@@ -29,19 +29,19 @@ import (
 
 func TestTextFormatterWrite(t *testing.T) {
 	tests := []struct {
-		name     string
-		value    any
-		expected string
+		name  string
+		value any
+		want  string
 	}{
 		{
-			name:     "string",
-			value:    "test",
-			expected: "test\n",
+			name:  "string",
+			value: "test",
+			want:  "test\n",
 		},
 		{
-			name:     "number",
-			value:    123,
-			expected: "123\n",
+			name:  "number",
+			value: 123,
+			want:  "123\n",
 		},
 	}
 
@@ -51,17 +51,14 @@ func TestTextFormatterWrite(t *testing.T) {
 			f := NewTextFormatter()
 
 			err := f.Write(out, test.value)
-
 			assert.NilError(t, err)
-			assert.Equal(t, out.String(), test.expected)
+			assert.Equal(t, out.String(), test.want)
 		})
 	}
 }
 
 func TestTextFormatterWriteError(t *testing.T) {
 	f := NewTextFormatter()
-
 	err := f.Write(newErrorWriter(), "test")
-
 	assert.ErrorIs(t, err, errWriteFailed)
 }
