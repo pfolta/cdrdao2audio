@@ -43,7 +43,21 @@ func NewVersionCommand(appInfo *cdrdao2audio.AppInfo) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "version",
 		Short: "Show version information",
-		Args:  cobra.NoArgs,
+		Example: "# Print human-readable version and build information:\n" +
+			appInfo.Name + " version\n" +
+			"\n" +
+			"# Only print the version number:\n" +
+			appInfo.Name + " version --short\n" +
+			appInfo.Name + " version -s\n" +
+			"\n" +
+			"# Print the version and build information formatted as YAML:\n" +
+			appInfo.Name + " version --format yaml\n" +
+			appInfo.Name + " version -f yaml\n" +
+			"\n" +
+			"# Mix and match:\n" +
+			appInfo.Name + " version --short --format json\n" +
+			appInfo.Name + " version -s -f json\n",
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return runVersion(cmd.OutOrStdout(), appInfo, opts)
 		},
