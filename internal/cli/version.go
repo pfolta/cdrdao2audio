@@ -56,7 +56,7 @@ func NewVersionCommand(appInfo *cdrdao2audio.AppInfo) *cobra.Command {
 			"\n" +
 			"# Mix and match:\n" +
 			appInfo.Name + " version --short --format json\n" +
-			appInfo.Name + " version -s -f json\n",
+			appInfo.Name + " version -s -f json",
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return runVersion(cmd.OutOrStdout(), appInfo, opts)
