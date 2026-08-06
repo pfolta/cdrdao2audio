@@ -38,7 +38,7 @@ type versionOptions struct {
 
 // NewVersionCommand creates a Cobra command that displays application version
 // information.
-func NewVersionCommand(appInfo cdrdao2audio.AppInfo) *cobra.Command {
+func NewVersionCommand(appInfo *cdrdao2audio.AppInfo) *cobra.Command {
 	opts := versionOptions{}
 	cmd := &cobra.Command{
 		Use:   "version",
@@ -67,7 +67,7 @@ func NewVersionCommand(appInfo cdrdao2audio.AppInfo) *cobra.Command {
 
 func runVersion(
 	w io.Writer,
-	appInfo cdrdao2audio.AppInfo,
+	appInfo *cdrdao2audio.AppInfo,
 	opts versionOptions,
 ) error {
 	f, err := formatter.NewFormatter(formatter.Format(opts.format))

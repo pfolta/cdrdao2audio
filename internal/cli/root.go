@@ -47,7 +47,7 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 
-	cmd.AddCommand(NewVersionCommand(appInfo))
+	cmd.AddCommand(NewVersionCommand(&appInfo))
 
 	return cmd
 }

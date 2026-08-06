@@ -121,7 +121,7 @@ func TestVersionCommand(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			out := new(bytes.Buffer)
 
-			cmd := NewVersionCommand(testAppInfo)
+			cmd := NewVersionCommand(&testAppInfo)
 			cmd.SetOut(out)
 			cmd.SetArgs(test.args)
 
