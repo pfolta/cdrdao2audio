@@ -39,28 +39,35 @@ var testAppInfo = cdrdao2audio.AppInfo{
 }
 
 const (
-	wantVersionText = "cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)\n\nMIT\n"
-	wantVersionJSON = `{
-    "name": "cdrdao2audio",
-    "version": "v1.4.2-test",
-    "buildDate": "2026-07-15T22:29:10Z",
-    "license": "MIT",
-    "os": "darwin",
-    "arch": "arm64"
-}
-`
-	wantVersionYAML = `---
-name: cdrdao2audio
-version: v1.4.2-test
-buildDate: "2026-07-15T22:29:10Z"
-license: MIT
-os: darwin
-arch: arm64
-`
+	wantVersionText = "cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)\n" +
+		"\n" +
+		"MIT\n"
+
+	wantVersionJSON = "{\n" +
+		"    \"name\": \"cdrdao2audio\",\n" +
+		"    \"version\": \"v1.4.2-test\",\n" +
+		"    \"buildDate\": \"2026-07-15T22:29:10Z\",\n" +
+		"    \"license\": \"MIT\",\n" +
+		"    \"os\": \"darwin\",\n" +
+		"    \"arch\": \"arm64\"\n" +
+		"}\n"
+
+	wantVersionYAML = "---\n" +
+		"name: cdrdao2audio\n" +
+		"version: v1.4.2-test\n" +
+		"buildDate: \"2026-07-15T22:29:10Z\"\n" +
+		"license: MIT\n" +
+		"os: darwin\n" +
+		"arch: arm64\n"
 
 	wantShortVersionText = "1.4.2-test\n"
-	wantShortVersionJSON = "{\n    \"version\": \"1.4.2-test\"\n}\n"
-	wantShortVersionYAML = "---\nversion: 1.4.2-test\n"
+
+	wantShortVersionJSON = "{\n" +
+		"    \"version\": \"1.4.2-test\"\n" +
+		"}\n"
+
+	wantShortVersionYAML = "---\n" +
+		"version: 1.4.2-test\n"
 )
 
 func TestVersionCommand(t *testing.T) {

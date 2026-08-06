@@ -44,12 +44,17 @@ func TestJSONFormatterWrite(t *testing.T) {
 	}{
 		{
 			name: "default formatted json",
-			want: "{\n    \"a\": {\n        \"b\": 1,\n        \"c\": \"test\"\n    }\n}\n",
+			want: "{\n" +
+				"    \"a\": {\n" +
+				"        \"b\": 1,\n" +
+				"        \"c\": \"test\"\n" +
+				"    }\n" +
+				"}\n",
 		},
 		{
 			name: "compact json",
 			opts: []JSONOption{CompactJSON},
-			want: `{"a":{"b":1,"c":"test"}}` + "\n",
+			want: "{\"a\":{\"b\":1,\"c\":\"test\"}}\n",
 		},
 	}
 
@@ -80,7 +85,12 @@ func TestJSONFormatterOptionsOverrideDefaults(t *testing.T) {
 	input.A.B = 1
 	input.A.C = "test"
 
-	want := "{\n  \"a\": {\n    \"b\": 1,\n    \"c\": \"test\"\n  }\n}\n"
+	want := "{\n" +
+		"  \"a\": {\n" +
+		"    \"b\": 1,\n" +
+		"    \"c\": \"test\"\n" +
+		"  }\n" +
+		"}\n"
 
 	err := f.Write(out, input)
 	assert.NilError(t, err)
@@ -95,7 +105,9 @@ func TestJSONFormatterDisablesHTMLEscape(t *testing.T) {
 		"html": "<script>",
 	}
 
-	want := "{\n    \"html\": \"<script>\"\n}\n"
+	want := "{\n" +
+		"    \"html\": \"<script>\"\n" +
+		"}\n"
 
 	err := f.Write(out, input)
 	assert.NilError(t, err)

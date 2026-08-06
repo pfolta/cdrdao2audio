@@ -43,7 +43,11 @@ func TestYAMLFormatterWrite(t *testing.T) {
 	var input testYAMLInput
 	input.A.B = 1
 	input.A.C = "test"
-	want := "---\na:\n  b: 1\n  c: test\n"
+
+	want := "---\n" +
+		"a:\n" +
+		"  b: 1\n" +
+		"  c: test\n"
 
 	err := f.Write(out, input)
 	assert.NilError(t, err)
@@ -60,7 +64,11 @@ func TestYAMLFormatterOptionsOverrideDefaults(t *testing.T) {
 	var input testYAMLInput
 	input.A.B = 1
 	input.A.C = "test"
-	want := "---\na:\n    b: 1\n    c: test\n"
+
+	want := "---\n" +
+		"a:\n" +
+		"    b: 1\n" +
+		"    c: test\n"
 
 	err := f.Write(out, input)
 	assert.NilError(t, err)
