@@ -105,6 +105,18 @@ jobs:
             fi
 
             echo
+            echo "## Verify the artifacts"
+            echo
+            echo "First, download the [\`SHA256SUMS\`](${REPOSITORY_URL}/releases/download/${TAG}/SHA256SUMS) file, for example, with \`wget\`:"
+            echo "\`\`\`bash"
+            echo "wget ${REPOSITORY_URL}/releases/download/${TAG}/SHA256SUMS"
+            echo "\`\`\`"
+            echo "Then verify the checksums of any artifact you downloaded from the release using \`sha256sum\`:"
+            echo "\`\`\`bash"
+            echo "sha256sum --ignore-missing -c SHA256SUMS"
+            echo "\`\`\`"
+
+            echo
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
