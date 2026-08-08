@@ -24,15 +24,19 @@ import (
 	_ "embed"
 	"fmt"
 	"runtime"
+	"runtime/debug"
 	"strings"
 )
 
 const programName = "cdrdao2audio"
 
-// Build information injected via -ldflags.
 var (
-	buildDate = "unknown"
-	version   = "dev"
+	// Build information injected via `-ldflags`.
+	buildDate string
+	version   string
+
+	// readBuildInfo can be overridden for testing.
+	readBuildInfo = debug.ReadBuildInfo
 )
 
 //go:embed LICENSE
@@ -43,11 +47,11 @@ type AppInfo struct {
 	// Name is the application name.
 	Name string `json:"name" yaml:"name"`
 
-	// Version is the application version injected at build time.
+	// Version is the application version.
 	Version string `json:"version" yaml:"version"`
 
 	// BuildDate is the timestamp when the binary was built.
-	BuildDate string `json:"buildDate" yaml:"buildDate"`
+	BuildDate string `json:"buildDate,omitempty" yaml:"buildDate,omitempty"`
 
 	// License contains the application license text.
 	License string `json:"license" yaml:"license"`
@@ -59,29 +63,34 @@ type AppInfo struct {
 	Arch string `json:"arch" yaml:"arch"`
 }
 
-// ShortVersion returns the raw application's version number.
+// ShortVersion returns the application's version without a leading "v".
 func (appInfo AppInfo) ShortVersion() ShortVersion {
 	return ShortVersion{Version: strings.TrimPrefix(appInfo.Version, "v")}
 }
 
 // String formats the application's build and runtime information.
 func (appInfo AppInfo) String() string {
-	return fmt.Sprintf("%s version %s-%s-%s (%s)\n\n%s",
+	buildDate := ""
+	if appInfo.BuildDate != "" {
+		buildDate = " (" + appInfo.BuildDate + ")"
+	}
+
+	return fmt.Sprintf("%s version %s-%s-%s%s\n\n%s",
 		appInfo.Name,
 		appInfo.Version,
 		appInfo.OS,
 		appInfo.Arch,
-		appInfo.BuildDate,
+		buildDate,
 		appInfo.License,
 	)
 }
 
-// ShortVersion contains the raw application's version number.
+// ShortVersion contains the application's version without a leading "v".
 type ShortVersion struct {
 	Version string `json:"version" yaml:"version"`
 }
 
-// String formats the application's raw version number.
+// String formats the application's short version number.
 func (shortVersion ShortVersion) String() string {
 	return shortVersion.Version
 }
@@ -90,10 +99,27 @@ func (shortVersion ShortVersion) String() string {
 func GetAppInfo() AppInfo {
 	return AppInfo{
 		Name:      programName,
-		Version:   version,
+		Version:   determineVersion(),
 		BuildDate: buildDate,
 		License:   strings.TrimSpace(license),
 		OS:        runtime.GOOS,
 		Arch:      runtime.GOARCH,
 	}
+}
+
+func determineVersion() string {
+	// Use version injected via `-ldflags`, if present.
+	if version != "" {
+		return version
+	}
+
+	// Use Go's embedded build information, e.g. if installed with `go install`.
+	if info, ok := readBuildInfo(); ok {
+		if info.Main.Version != "" && info.Main.Version != "(devel)" {
+			return info.Main.Version
+		}
+	}
+
+	// Fall back to "dev", e.g. if built from source.
+	return "dev"
 }

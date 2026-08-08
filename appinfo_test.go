@@ -22,6 +22,7 @@ package cdrdao2audio
 
 import (
 	"runtime"
+	"runtime/debug"
 	"testing"
 
 	"gotest.tools/v3/assert"
@@ -29,26 +30,17 @@ import (
 )
 
 func TestGetAppInfo(t *testing.T) {
-	originalVersion := version
-	originalBuildDate := buildDate
-
-	defer func() {
-		version = originalVersion
-		buildDate = originalBuildDate
-	}()
-
-	// Simulate build-time metadata injection.
-	version = "v1.4.2-test"
-	buildDate = "2026-07-15T22:29:10Z"
+	simulateInject(t, &version, "v1.4.2-test")
+	simulateInject(t, &buildDate, "2026-07-15T22:29:10Z")
 
 	appInfo := GetAppInfo()
 
-	assert.Equal(t, appInfo.Name, programName)
-	assert.Equal(t, appInfo.Version, "v1.4.2-test")
-	assert.Equal(t, appInfo.BuildDate, "2026-07-15T22:29:10Z")
+	assert.Assert(t, is.Equal(appInfo.Name, programName))
+	assert.Assert(t, is.Equal(appInfo.Version, "v1.4.2-test"))
+	assert.Assert(t, is.Equal(appInfo.BuildDate, "2026-07-15T22:29:10Z"))
 	assert.Assert(t, is.Contains(appInfo.License, "Copyright"))
-	assert.Equal(t, appInfo.OS, runtime.GOOS)
-	assert.Equal(t, appInfo.Arch, runtime.GOARCH)
+	assert.Assert(t, is.Equal(appInfo.OS, runtime.GOOS))
+	assert.Assert(t, is.Equal(appInfo.Arch, runtime.GOARCH))
 }
 
 func TestAppInfoString(t *testing.T) {
@@ -61,15 +53,81 @@ func TestAppInfoString(t *testing.T) {
 		Arch:      "arm64",
 	}
 
-	assert.Equal(t, appInfo.String(), "cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)\n\nMIT")
+	assert.Assert(t, is.Equal(appInfo.String(), "cdrdao2audio version v1.4.2-test-darwin-arm64 (2026-07-15T22:29:10Z)\n\nMIT"))
 }
 
 func TestAppInfoShortVersion(t *testing.T) {
 	appInfo := AppInfo{Version: "v1.4.2-test"}
-	assert.Equal(t, appInfo.ShortVersion(), ShortVersion{Version: "1.4.2-test"})
+	assert.Assert(t, is.Equal(appInfo.ShortVersion(), ShortVersion{Version: "1.4.2-test"}))
 }
 
 func TestShortVersionString(t *testing.T) {
 	version := ShortVersion{Version: "1.4.2-test"}
-	assert.Equal(t, version.String(), "1.4.2-test")
+	assert.Assert(t, is.Equal(version.String(), "1.4.2-test"))
+}
+
+func TestDetermineVersion(t *testing.T) {
+	tests := []struct {
+		name        string
+		version     string
+		buildInfo   *debug.BuildInfo
+		buildInfoOK bool
+		want        string
+	}{
+		{
+			name:    "injected version",
+			version: "v1.4.2-test",
+			want:    "v1.4.2-test",
+		},
+		{
+			name:    "embedded Go build information",
+			version: "",
+			buildInfo: &debug.BuildInfo{
+				Main: debug.Module{
+					Version: "v1.4.2",
+				},
+			},
+			buildInfoOK: true,
+			want:        "v1.4.2",
+		},
+		{
+			name:    "development build",
+			version: "",
+			buildInfo: &debug.BuildInfo{
+				Main: debug.Module{
+					Version: "(devel)",
+				},
+			},
+			buildInfoOK: true,
+			want:        "dev",
+		},
+		{
+			name:        "fallback",
+			version:     "",
+			buildInfoOK: false,
+			want:        "dev",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			simulateInject(t, &version, test.version)
+			simulateInject(t, &readBuildInfo, func() (*debug.BuildInfo, bool) {
+				return test.buildInfo, test.buildInfoOK
+			})
+
+			assert.Assert(t, is.Equal(determineVersion(), test.want))
+		})
+	}
+}
+
+func simulateInject[T any](t *testing.T, variable *T, value T) {
+	t.Helper()
+
+	original := *variable
+	*variable = value
+
+	t.Cleanup(func() {
+		*variable = original
+	})
 }
