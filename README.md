@@ -11,7 +11,7 @@
 
 ## Installation
 
-- Binaries are available for **Linux**, **macOS** and **Windows** and can be downloaded directly from the [Releases](https://github.com/pfolta/cdrdao2audio/releases) page.
+- Binaries are available for **Linux**, **macOS** and **Windows** on the [Releases](https://github.com/pfolta/cdrdao2audio/releases) page.
 
   **macOS:** Run the following command to remove the downloaded file from quarantine:
 
