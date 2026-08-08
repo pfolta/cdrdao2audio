@@ -115,7 +115,7 @@ func determineVersion() string {
 
 	// Use Go's embedded build information, e.g. if installed with `go install`.
 	if info, ok := readBuildInfo(); ok {
-		if info.Main.Version != "" && info.Main.Version != "(devel)" {
+		if strings.HasPrefix(info.Main.Version, "v") {
 			return info.Main.Version
 		}
 	}
