@@ -21,10 +21,15 @@
 package cli
 
 import (
+	"errors"
+
 	"github.com/spf13/cobra"
 
 	"github.com/pfolta/cdrdao2audio"
 )
+
+// ErrNoCommand indicates that the CLI was invoked without a subcommand.
+var ErrNoCommand = errors.New("no command specified")
 
 func NewRootCommand() *cobra.Command {
 	appInfo := cdrdao2audio.GetAppInfo()

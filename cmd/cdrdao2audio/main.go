@@ -21,18 +21,27 @@
 package main
 
 import (
-	"errors"
-	"fmt"
+	"context"
 	"os"
+
+	"charm.land/fang/v2"
 
 	"github.com/pfolta/cdrdao2audio/internal/cli"
 )
 
 func main() {
-	if err := cli.NewRootCommand().Execute(); err != nil {
-		if !errors.Is(err, cli.ErrNoCommand) {
-			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		}
+	opts := []fang.Option{
+		fang.WithColorSchemeFunc(fang.AnsiColorScheme),
+		fang.WithoutManpage(),
+
+		// Use `version` subcommand instead of `--version`/`-v` flag.
+		fang.WithoutVersion(),
+	}
+
+	cmd := cli.NewRootCommand()
+	ctx := context.Background()
+
+	if err := fang.Execute(ctx, cmd, opts...); err != nil {
 		os.Exit(1)
 	}
 }
