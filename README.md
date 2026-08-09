@@ -9,7 +9,7 @@
 [![Build status](https://img.shields.io/github/actions/workflow/status/pfolta/cdrdao2audio/ci.yaml?branch=master&logo=github)](https://github.com/pfolta/cdrdao2audio/actions/workflows/ci.yaml)
 [![Test coverage](https://img.shields.io/codecov/c/github/pfolta/cdrdao2audio/master?logo=codecov)](https://codecov.io/gh/pfolta/cdrdao2audio)
 
-cdrdao2audio is a command-line application for ripping audio tracks from a [cdrdao](https://cdrdao.sourceforge.net) backup of an audio CD (**Compact Disc Digital Audio** or **CD-DA**).
+cdrdao2audio is a command-line application for ripping audio tracks from a [cdrdao](https://cdrdao.sourceforge.net) backup of an audio CD.
 
 ## Installation
 
