@@ -32,14 +32,18 @@ import (
 )
 
 type versionOptions struct {
+	format formatter.Format
 	short  bool
-	format string
 }
 
 // NewVersionCommand creates a Cobra command that displays application version
 // information.
 func NewVersionCommand(appInfo *cdrdao2audio.AppInfo) *cobra.Command {
-	opts := versionOptions{}
+	opts := versionOptions{
+		format: formatter.TEXT,
+		short:  false,
+	}
+
 	cmd := &cobra.Command{
 		Use:   "version",
 		Short: "Show version information",
@@ -64,11 +68,10 @@ func NewVersionCommand(appInfo *cdrdao2audio.AppInfo) *cobra.Command {
 	}
 
 	flags := cmd.Flags()
-	flags.StringVarP(
+	flags.VarP(
 		&opts.format,
 		"format",
 		"f",
-		string(formatter.TEXT),
 		fmt.Sprintf(
 			"output format: [%s]",
 			strings.Join(formatter.Formats(), "|"),

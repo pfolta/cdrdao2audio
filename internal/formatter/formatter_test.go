@@ -84,7 +84,7 @@ func TestNewFormatter(t *testing.T) {
 		{
 			name:    "unknown format",
 			format:  "xml",
-			wantErr: ErrUnknownFormat,
+			wantErr: ErrFormat,
 		},
 	}
 

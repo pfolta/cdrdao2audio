@@ -21,30 +21,41 @@
 package formatter
 
 import (
-	"fmt"
-	"io"
+	"errors"
+	"slices"
 	"strings"
 )
 
-// Formatter writes values to an [io.Writer].
-type Formatter interface {
-	// Write writes v to w using the formatter's output format.
-	Write(w io.Writer, v any) error
+type Format string
+
+const (
+	JSON Format = "json"
+	TEXT Format = "text"
+	YAML Format = "yaml"
+)
+
+var ErrFormat = errors.New("must be one of [" + strings.Join(Formats(), "|") + "]")
+
+// Formats returns the list of supported output formats.
+func Formats() []string {
+	return []string{string(TEXT), string(JSON), string(YAML)}
 }
 
-// NewFormatter creates a formatter for the requested format.
-func NewFormatter(format Format) (Formatter, error) {
-	switch Format(strings.ToLower(string(format))) {
-	case JSON:
-		return NewJSONFormatter(), nil
+func (format Format) String() string {
+	return string(format)
+}
 
-	case TEXT:
-		return NewTextFormatter(), nil
+func (format *Format) Set(str string) error {
+	f := strings.ToLower(str)
 
-	case YAML:
-		return NewYAMLFormatter(), nil
-
-	default:
-		return nil, fmt.Errorf("invalid format %q: %w", format, ErrFormat)
+	if !slices.Contains(Formats(), f) {
+		return ErrFormat
 	}
+
+	*format = Format(f)
+	return nil
+}
+
+func (Format) Type() string {
+	return "string"
 }
