@@ -18,48 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package main
+package cli
 
 import (
-	"context"
-	"os"
+	"image/color"
 
 	"charm.land/fang/v2"
-
-	"github.com/pfolta/cdrdao2audio/internal/cli"
-	"github.com/pfolta/cdrdao2audio/internal/cli/command"
+	"charm.land/lipgloss/v2"
 )
 
-func main() {
-	if err := run(os.Args[1:]); err != nil {
-		os.Exit(1)
+func FangColorScheme(lightDark lipgloss.LightDarkFunc) fang.ColorScheme {
+	base := lightDark(lipgloss.Black, lipgloss.White)
+	return fang.ColorScheme{
+		Base:         base,
+		Title:        lipgloss.Blue,
+		Description:  base,
+		Comment:      lightDark(lipgloss.BrightWhite, lipgloss.BrightBlack),
+		Flag:         lipgloss.Magenta,
+		FlagDefault:  lipgloss.BrightMagenta,
+		Command:      lipgloss.Cyan,
+		QuotedString: lipgloss.Green,
+		Argument:     base,
+		Help:         base,
+		Dash:         base,
+		ErrorHeader:  [2]color.Color{lipgloss.White, lipgloss.Red},
+		ErrorDetails: lipgloss.Red,
 	}
-}
-
-func run(args []string) error {
-	opts := []fang.Option{
-		// Use custom color scheme.
-		fang.WithColorSchemeFunc(cli.FangColorScheme),
-
-		// Set default interrupt and kill signals.
-		fang.WithNotifySignal(os.Interrupt, os.Kill),
-
-		// Disable man page generation for now.
-		fang.WithoutManpage(),
-
-		// Use `version` subcommand instead of `--version`/`-v` flag.
-		fang.WithoutVersion(),
-	}
-
-	ctx := context.Background()
-
-	cmd := command.NewRootCommand()
-	cmd.SetArgs(args)
-
-	// Parse flags early, so the color mode is configured before running Cobra.
-	// Ignore any parsing errors at this stage. Cobra will parse the flags again
-	// when running `Execute()` and report any parsing errors.
-	_ = cmd.ParseFlags(args)
-
-	return fang.Execute(ctx, cmd, opts...)
 }
