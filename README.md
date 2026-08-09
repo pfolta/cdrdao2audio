@@ -29,8 +29,9 @@ cdrdao2audio is a command-line application for ripping audio tracks from a [cdrd
 
 - Or, build and install it from source (requires [Go](https://go.dev)):
 
-      git clone git@github.com:pfolta/cdrdao2audio.git
-      make install
+      git clone git@github.com:pfolta/cdrdao2audio.git && \
+        cd cdrdao2audio && \
+        make install
 
 ## License
 
