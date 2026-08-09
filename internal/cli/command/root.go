@@ -31,11 +31,25 @@ import (
 	"github.com/pfolta/cdrdao2audio/internal/cli"
 )
 
+type rootOptions struct {
+	colorMode cli.ColorMode
+}
+
 // ErrNoCommand indicates that the CLI was invoked without a subcommand.
 var ErrNoCommand = errors.New("no command specified")
 
 func NewRootCommand() *cobra.Command {
 	appInfo := cdrdao2audio.GetAppInfo()
+
+	opts := rootOptions{
+		// Initialize with "auto" so that Cobra's help text includes the default
+		// value for `--color`. However, this doesn't trigger the side effect in
+		// `*colorMode.Set()`. In this case, this is desired as the environment
+		// configuration should only be applied if a `--color` flag was actually
+		// passed. This means that without the flag the current environment
+		// variables still take effect.
+		colorMode: cli.ColorAuto,
+	}
 
 	cmd := &cobra.Command{
 		Use:                appInfo.Name,
@@ -55,17 +69,9 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 
-	// Initialize with "auto" so that Cobra's help text includes the default
-	// value for `--color`. However, this doesn't trigger the side effect in
-	// `*colorMode.Set()`. In this case, this is desired as the environment
-	// configuration should only be applied if a `--color` flag was actually
-	// passed. This means that without the flag the current environment
-	// variables still take effect.
-	colorMode := cli.ColorAuto
-
 	pflags := cmd.PersistentFlags()
 	pflags.Var(
-		&colorMode,
+		&opts.colorMode,
 		"color",
 		fmt.Sprintf("colored output: [%s]", strings.Join(cli.ColorModes(), "|")),
 	)
