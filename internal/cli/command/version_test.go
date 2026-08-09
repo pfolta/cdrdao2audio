@@ -108,9 +108,9 @@ func TestVersionCommand(t *testing.T) {
 			want: wantShortVersionYAML,
 		},
 		{
-			name:    "unknown output format",
+			name:    "invalid format",
 			args:    []string{"--format", "xml"},
-			wantErr: "unknown format",
+			wantErr: "invalid argument",
 		},
 		{
 			name:    "unknown flag",
