@@ -18,14 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package cli
+package command
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/pfolta/cdrdao2audio"
+	"github.com/pfolta/cdrdao2audio/internal/cli"
 )
 
 // ErrNoCommand indicates that the CLI was invoked without a subcommand.
@@ -51,6 +54,21 @@ func NewRootCommand() *cobra.Command {
 			return ErrNoCommand
 		},
 	}
+
+	// Initialize with "auto" so that Cobra's help text includes the default
+	// value for `--color`. However, this doesn't trigger the side effect in
+	// `*colorMode.Set()`. In this case, this is desired as the environment
+	// configuration should only be applied if a `--color` flag was actually
+	// passed. This means that without the flag the current environment
+	// variables still take effect.
+	colorMode := cli.ColorAuto
+
+	pflags := cmd.PersistentFlags()
+	pflags.Var(
+		&colorMode,
+		"color",
+		fmt.Sprintf("colored output: [%s]", strings.Join(cli.ColorModes(), "|")),
+	)
 
 	cmd.AddCommand(NewVersionCommand(&appInfo))
 

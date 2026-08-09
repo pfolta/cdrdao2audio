@@ -26,10 +26,16 @@ import (
 
 	"charm.land/fang/v2"
 
-	"github.com/pfolta/cdrdao2audio/internal/cli"
+	"github.com/pfolta/cdrdao2audio/internal/cli/command"
 )
 
 func main() {
+	if err := run(os.Args[1:]); err != nil {
+		os.Exit(1)
+	}
+}
+
+func run(args []string) error {
 	opts := []fang.Option{
 		fang.WithColorSchemeFunc(fang.AnsiColorScheme),
 		fang.WithoutManpage(),
@@ -38,10 +44,15 @@ func main() {
 		fang.WithoutVersion(),
 	}
 
-	cmd := cli.NewRootCommand()
 	ctx := context.Background()
 
-	if err := fang.Execute(ctx, cmd, opts...); err != nil {
-		os.Exit(1)
-	}
+	cmd := command.NewRootCommand()
+	cmd.SetArgs(args)
+
+	// Parse flags early, so the color mode is configured before running Cobra.
+	// Ignore any parsing errors at this stage. Cobra will parse the flags again
+	// when running `Execute()` and report any parsing errors.
+	_ = cmd.ParseFlags(args)
+
+	return fang.Execute(ctx, cmd, opts...)
 }
