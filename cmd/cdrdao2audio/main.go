@@ -38,6 +38,11 @@ func main() {
 func run(args []string) error {
 	opts := []fang.Option{
 		fang.WithColorSchemeFunc(fang.AnsiColorScheme),
+
+		// Set default interrupt and kill signals.
+		fang.WithNotifySignal(os.Interrupt, os.Kill),
+
+		// Disable man page generation for now.
 		fang.WithoutManpage(),
 
 		// Use `version` subcommand instead of `--version`/`-v` flag.
