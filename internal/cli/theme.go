@@ -28,19 +28,18 @@ import (
 )
 
 func FangColorScheme(lightDark lipgloss.LightDarkFunc) fang.ColorScheme {
-	base := lightDark(lipgloss.Black, lipgloss.White)
 	return fang.ColorScheme{
-		Base:         base,
+		Base:         lipgloss.NoColor{},
 		Title:        lipgloss.Blue,
-		Description:  base,
+		Description:  lipgloss.NoColor{},
 		Comment:      lightDark(lipgloss.BrightWhite, lipgloss.BrightBlack),
 		Flag:         lipgloss.Magenta,
 		FlagDefault:  lipgloss.BrightMagenta,
 		Command:      lipgloss.Cyan,
 		QuotedString: lipgloss.Green,
-		Argument:     base,
-		Help:         base,
-		Dash:         base,
+		Argument:     lipgloss.NoColor{},
+		Help:         lipgloss.NoColor{},
+		Dash:         lipgloss.NoColor{},
 		ErrorHeader:  [2]color.Color{lipgloss.White, lipgloss.Red},
 		ErrorDetails: lipgloss.Red,
 	}
