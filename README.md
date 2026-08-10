@@ -23,11 +23,11 @@ cdrdao2audio is a command-line application for ripping audio tracks from a [cdrd
 
       docker run -ti --rm pfolta/cdrdao2audio
 
-- Or, install it with `go`:
+- Or, install it with **Go**:
 
       go install github.com/pfolta/cdrdao2audio/cmd/cdrdao2audio@latest
 
-- Or, build and install it from source (requires [Go](https://go.dev)):
+- Or, build and install it **from source** (requires [Go](https://go.dev)):
 
       git clone git@github.com:pfolta/cdrdao2audio.git && \
         cd cdrdao2audio && \
