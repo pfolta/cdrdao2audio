@@ -21,84 +21,96 @@
 package formatter
 
 import (
-	"errors"
-	"io"
-	"reflect"
 	"testing"
 
 	"gotest.tools/v3/assert"
 	is "gotest.tools/v3/assert/cmp"
 )
 
-var errWriteFailed = errors.New("write failed")
+func TestFormats(t *testing.T) {
+	formats := Formats()
+	want := []string{"text", "json", "yaml"}
 
-type errorWriter struct {
-	err error
+	assert.Assert(t, is.Equal(len(formats), len(want)))
+
+	for _, format := range formats {
+		assert.Assert(t, is.Contains(want, format))
+	}
 }
 
-func (w errorWriter) Write([]byte) (int, error) {
-	return 0, w.err
+func TestFormatString(t *testing.T) {
+	tests := []struct {
+		format Format
+		want   string
+	}{
+		{TEXT, "text"},
+		{JSON, "json"},
+		{YAML, "yaml"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.want, func(t *testing.T) {
+			assert.Assert(t, is.Equal(test.format.String(), test.want))
+		})
+	}
 }
 
-func newErrorWriter() io.Writer {
-	return errorWriter{err: errWriteFailed}
-}
-
-func TestNewFormatter(t *testing.T) {
+func TestFormatSet(t *testing.T) {
 	tests := []struct {
 		name    string
-		format  Format
-		want    any
+		str     string
+		want    Format
 		wantErr error
 	}{
 		{
-			name:   "text",
-			format: TEXT,
-			want:   &TextFormatter{},
+			name: "text",
+			str:  "text",
+			want: TEXT,
 		},
 		{
-			name:   "json",
-			format: JSON,
-			want:   &JSONFormatter{},
+			name: "json",
+			str:  "json",
+			want: JSON,
 		},
 		{
-			name:   "yaml",
-			format: YAML,
-			want:   &YAMLFormatter{},
+			name: "yaml",
+			str:  "yaml",
+			want: YAML,
 		},
 		{
-			name:   "text is case insensitive",
-			format: "TeXt",
-			want:   &TextFormatter{},
-		},
-		{
-			name:   "json is case insensitive",
-			format: "JsOn",
-			want:   &JSONFormatter{},
-		},
-		{
-			name:   "yaml is case insensitive",
-			format: "yAML",
-			want:   &YAMLFormatter{},
+			name: "case insensitive",
+			str:  "JsOn",
+			want: JSON,
 		},
 		{
 			name:    "unknown format",
-			format:  "xml",
+			str:     "xml",
+			wantErr: ErrFormat,
+		},
+		{
+			name:    "empty format",
+			str:     "",
 			wantErr: ErrFormat,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			f, err := NewFormatter(test.format)
+			format := TEXT
+
+			err := format.Set(test.str)
 
 			if test.wantErr != nil {
-				assert.ErrorIs(t, err, test.wantErr)
-				assert.Assert(t, f == nil)
+				assert.Assert(t, is.ErrorIs(err, test.wantErr))
+				assert.Assert(t, is.Equal(format, TEXT))
 			} else {
 				assert.NilError(t, err)
-				assert.Assert(t, is.Equal(reflect.TypeOf(f), reflect.TypeOf(test.want)))
+				assert.Assert(t, is.Equal(format, test.want))
 			}
 		})
 	}
+}
+
+func TestFormatType(t *testing.T) {
+	assert.Assert(t, is.Equal(TEXT.Type(), "string"))
 }
