@@ -34,20 +34,24 @@ func TestColorModes(t *testing.T) {
 
 	assert.Assert(t, is.Equal(len(modes), len(want)))
 
-	for _, mode := range want {
-		assert.Assert(t, is.Contains(modes, mode))
+	for _, mode := range modes {
+		assert.Assert(t, is.Contains(want, mode))
 	}
 }
 
 func TestColorModeString(t *testing.T) {
 	for _, mode := range ColorModes() {
-		assert.Assert(t, is.Equal(ColorMode(mode).String(), mode))
+		t.Run(mode, func(t *testing.T) {
+			assert.Assert(t, is.Equal(ColorMode(mode).String(), mode))
+		})
 	}
 }
 
 func TestColorModeType(t *testing.T) {
 	for _, mode := range ColorModes() {
-		assert.Assert(t, is.Equal(ColorMode(mode).Type(), "string"))
+		t.Run(mode, func(t *testing.T) {
+			assert.Assert(t, is.Equal(ColorMode(mode).Type(), "string"))
+		})
 	}
 }
 

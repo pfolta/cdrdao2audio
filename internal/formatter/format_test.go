@@ -39,18 +39,17 @@ func TestFormats(t *testing.T) {
 }
 
 func TestFormatString(t *testing.T) {
-	tests := []struct {
-		format Format
-		want   string
-	}{
-		{TEXT, "text"},
-		{JSON, "json"},
-		{YAML, "yaml"},
+	for _, format := range Formats() {
+		t.Run(format, func(t *testing.T) {
+			assert.Assert(t, is.Equal(Format(format).String(), format))
+		})
 	}
+}
 
-	for _, test := range tests {
-		t.Run(test.want, func(t *testing.T) {
-			assert.Assert(t, is.Equal(test.format.String(), test.want))
+func TestFormatType(t *testing.T) {
+	for _, format := range Formats() {
+		t.Run(format, func(t *testing.T) {
+			assert.Assert(t, is.Equal(Format(format).Type(), "string"))
 		})
 	}
 }
@@ -109,8 +108,4 @@ func TestFormatSet(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestFormatType(t *testing.T) {
-	assert.Assert(t, is.Equal(TEXT.Type(), "string"))
 }

@@ -52,6 +52,10 @@ func (colorMode ColorMode) String() string {
 	return string(colorMode)
 }
 
+func (ColorMode) Type() string {
+	return "string"
+}
+
 func (colorMode *ColorMode) Set(str string) error {
 	color := ColorMode(strings.ToLower(str))
 
@@ -68,10 +72,6 @@ func (colorMode *ColorMode) Set(str string) error {
 
 	*colorMode = color
 	return nil
-}
-
-func (ColorMode) Type() string {
-	return "string"
 }
 
 func disableColor() {

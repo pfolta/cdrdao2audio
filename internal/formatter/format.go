@@ -45,6 +45,10 @@ func (format Format) String() string {
 	return string(format)
 }
 
+func (Format) Type() string {
+	return "string"
+}
+
 func (format *Format) Set(str string) error {
 	f := strings.ToLower(str)
 
@@ -54,8 +58,4 @@ func (format *Format) Set(str string) error {
 
 	*format = Format(f)
 	return nil
-}
-
-func (Format) Type() string {
-	return "string"
 }
