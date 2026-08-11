@@ -33,8 +33,7 @@ To create an archive including subchannel data, use:
 cdrdao read-cd --read-raw --read-subchan rw_raw --datafile CD.bin CD.toc
 ```
 
-> **Note**
->
+> [!NOTE]
 > This guide assumes the optical drive is configured as the default device. Use `--device` if multiple drives are present.
 
 This creates a `CD.toc` file and a corresponding `CD.bin` binary data file containing the extracted disc sectors. Together, these files describe the original disc layout and contents. Both are needed to interpret the archive and to recreate the disc.
