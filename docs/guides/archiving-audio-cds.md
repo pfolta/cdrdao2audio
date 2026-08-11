@@ -30,7 +30,7 @@ Together, these files represent a complete logical archive of the disc structure
 To create an archive including subchannel data, use:
 
 ```bash
-$ cdrdao read-cd --read-raw --read-subchan rw_raw --datafile CD.bin CD.toc
+cdrdao read-cd --read-raw --read-subchan rw_raw --datafile CD.bin CD.toc
 ```
 
 > **Note**
@@ -52,7 +52,7 @@ This creates a `CD.toc` file and a corresponding `CD.bin` binary data file conta
 After creating an archive, it is good practice to verify that the generated TOC is readable and complete:
 
 ```bash
-$ cdrdao show-toc CD.toc
+cdrdao show-toc CD.toc
 ```
 
 This displays the disc structure recorded in the TOC file.
@@ -62,7 +62,7 @@ This displays the disc structure recorded in the TOC file.
 A `cdrdao` archive can be written back to a blank CD-R using the `cdrdao write` command:
 
 ```bash
-$ cdrdao write --speed 40 CD.toc
+cdrdao write --speed 40 CD.toc
 ```
 
 > **Command Explanation**
@@ -84,7 +84,7 @@ Because an Enhanced CD contains multiple sessions, archiving only the audio CD p
 To confirm the number of sessions on a disc, use:
 
 ```bash
-$ cdrdao disk-info
+cdrdao disk-info
 ```
 
 For an Enhanced CD, this will show something like:
@@ -98,9 +98,9 @@ Sessions             : 2
 Then read each session separately:
 
 ```bash
-$ cdrdao read-cd --session 1 --read-raw --read-subchan rw_raw --datafile session1.bin session1.toc
+cdrdao read-cd --session 1 --read-raw --read-subchan rw_raw --datafile session1.bin session1.toc
 
-$ cdrdao read-cd --session 2 --read-raw --read-subchan rw_raw --datafile session2.bin session2.toc
+cdrdao read-cd --session 2 --read-raw --read-subchan rw_raw --datafile session2.bin session2.toc
 ```
 
 > **Command Explanation**
@@ -122,9 +122,9 @@ To recreate an Enhanced CD, each session must be written back in the correct ord
 The CD-DA session should be written first and the disc left open (`--multi`). The data session should then be appended without `--multi` so that the disc is finalized:
 
 ```bash
-$ cdrdao write --speed 40 --multi session1.toc
+cdrdao write --speed 40 --multi session1.toc
 
-$ cdrdao write --speed 40 session2.toc
+cdrdao write --speed 40 session2.toc
 ```
 
 > **Command Explanation**
