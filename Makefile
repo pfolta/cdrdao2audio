@@ -87,13 +87,13 @@ help: ## Show this help message
 		printf "\n"; \
 		printf "  \033[1;34m%s\033[0m\n" "EXAMPLES"; \
 		printf "\n"; \
-		printf "    # Build for a specific target operating system and architecture:\n"; \
+		printf "    \033[33m# %s:\033[0m\n" "Build for a specific target operating system and architecture"; \
 		printf "    make \033[36mbuild\033[0m \033[35mGOOS=\033[0mlinux \033[35mGOARCH=\033[0marm64\n"; \
 		printf "\n"; \
-		printf "    # Combine multiple make targets:\n"; \
+		printf "    \033[33m# %s:\033[0m\n" "Combine multiple make targets"; \
 		printf "    make \033[36mclean\033[0m \033[36mvalidate\033[0m \033[36mtest\033[0m \033[36mbuild\033[0m\n"; \
 		printf "\n"; \
-		printf "    # Show this help text without using color:\n"; \
+		printf "    \033[33m# %s:\033[0m\n" "Show this help text without using color"; \
 		printf "    make \033[36mhelp\033[0m \033[35mCOLOR=\033[0mnever\n"; \
 		printf "\n"; \
 		printf "  \033[1;34m%s\033[0m\n" "TARGETS"; \

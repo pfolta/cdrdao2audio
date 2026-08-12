@@ -32,7 +32,7 @@ func FangColorScheme(lightDark lipgloss.LightDarkFunc) fang.ColorScheme {
 		Base:         lipgloss.NoColor{},
 		Title:        lipgloss.Blue,
 		Description:  lipgloss.NoColor{},
-		Comment:      lightDark(lipgloss.BrightWhite, lipgloss.BrightBlack),
+		Comment:      lipgloss.Yellow,
 		Flag:         lipgloss.Magenta,
 		FlagDefault:  lipgloss.BrightMagenta,
 		Command:      lipgloss.Cyan,
