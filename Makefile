@@ -23,11 +23,36 @@ GO_LDFLAGS := \
 	-X "$(PKG).buildDate=$(BUILD_DATE)" \
 	-X "$(PKG).version=$(VERSION)"
 
+# Control ANSI color output.
+#   - never:  Disable color
+#   - auto:   Use color when stdout is a terminal (default)
+#   - always: Always use color
+COLOR ?= auto
+NO_COLOR_CMD := sed -E "s/\x1B\[[0-9;]*[[:alpha:]]//g"
+
+ifeq ($(COLOR),never)
+	COLOR_HANDLER := $(NO_COLOR_CMD)
+else ifeq ($(COLOR),always)
+	COLOR_HANDLER := cat
+else ifeq ($(COLOR),auto)
+	COLOR_HANDLER := if [ -t 1 ]; then cat; else $(NO_COLOR_CMD); fi
+else
+$(error Invalid value "$(COLOR)" for "COLOR": must be one of [never|auto|always])
+endif
+
 .PHONY: default
-default: release
+default: help
+	@ { \
+		printf "\n"; \
+		printf "  \033[1;37;41m %s \033[0m\n" "ERROR"; \
+		printf "\n"; \
+		printf "  %s\n" "No target specified."; \
+		printf "\n"; \
+	} | $(COLOR_HANDLER)
+	@exit 1
 
 .PHONY: build
-build:
+build: ## Build the binary for GOOS/GOARCH (defaults to the host platform)
 	mkdir -p "$(BUILD_DIR)/bin"
 
 	CGO_ENABLED=0 \
@@ -39,29 +64,60 @@ build:
 		./cmd/cdrdao2audio
 
 .PHONY: clean
-clean:
+clean: ## Remove all build artifacts
 	rm -rf "$(BUILD_DIR)"
 
 .PHONY: deps
-deps:
+deps: ## Download Go module dependencies
 	go mod download
 
 .PHONY: fmt
-fmt:
+fmt: ## Format all Go source files with gofmt
 	gofmt -w .
 
+.PHONY: help
+help: ## Show this help message
+	@ { \
+		printf "\n"; \
+		printf "  %s\n" "Build system for cdrdao2audio"; \
+		printf "\n"; \
+		printf "  \033[1;34m%s\033[0m\n" "USAGE"; \
+		printf "\n"; \
+		printf "    make [\033[36mtarget\033[0m] [\033[35mVARIABLE=\033[0mvalue...]\n"; \
+		printf "\n"; \
+		printf "  \033[1;34m%s\033[0m\n" "EXAMPLES"; \
+		printf "\n"; \
+		printf "    # Build for a specific target operating system and architecture:\n"; \
+		printf "    make \033[36mbuild\033[0m \033[35mGOOS=\033[0mlinux \033[35mGOARCH=\033[0marm64\n"; \
+		printf "\n"; \
+		printf "    # Combine multiple make targets:\n"; \
+		printf "    make \033[36mclean\033[0m \033[36mvalidate\033[0m \033[36mtest\033[0m \033[36mbuild\033[0m\n"; \
+		printf "\n"; \
+		printf "    # Show this help text without using color:\n"; \
+		printf "    make \033[36mhelp\033[0m \033[35mCOLOR=\033[0mnever\n"; \
+		printf "\n"; \
+		printf "  \033[1;34m%s\033[0m\n" "TARGETS"; \
+		printf "\n"; \
+		awk 'BEGIN {FS = ":.*## "}; /^[a-zA-Z0-9_.-]+:.*## / {printf "    \033[36m%-16s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST); \
+		printf "\n"; \
+		printf "  \033[1;34m%s\033[0m\n" "VARIABLES"; \
+		printf "\n"; \
+		printf "    \033[35m%-16s\033[0m %s\n" "BUILD_DIR" "Directory for build artifacts (default: ./build)"; \
+		printf "    \033[35m%-16s\033[0m %s\n" "COLOR" "Colored output: [never|auto|always] (default: auto)"; \
+		printf "    \033[35m%-16s\033[0m %s\n" "GOARCH" "Target architecture (default: host architecture)"; \
+		printf "    \033[35m%-16s\033[0m %s\n" "GOOS" "Target operating system (default: host OS)"; \
+		printf "\n"; \
+	} | $(COLOR_HANDLER)
+
 .PHONY: install
-install:
+install: ## Install the binary with `go install`
 	CGO_ENABLED=0 \
 	go install \
 		-ldflags "$(GO_LDFLAGS)" \
 		./cmd/cdrdao2audio
 
-.PHONY: release
-release: validate test build
-
 .PHONY: test
-test:
+test: ## Run the test suite and generate coverage reports
 	mkdir -p "$(BUILD_DIR)/tests"
 	mkdir -p "$(BUILD_DIR)/reports"
 
@@ -77,7 +133,7 @@ test:
 		-o "$(BUILD_DIR)/reports/coverage.html"
 
 .PHONY: validate
-validate:
+validate: ## Check dependencies, formatting, linting, and license headers
 	go mod tidy --diff
 
 	gofmt -d .
@@ -87,5 +143,5 @@ validate:
 	  | xargs -0 go run github.com/google/addlicense@v1.2.0 -check -f LICENSE
 
 .PHONY: version
-version:
-	@echo "$(VERSION)"
+version: ## Print the current version number (useful for scripts)
+	@printf "%s\n" "$(VERSION)"
