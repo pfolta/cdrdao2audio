@@ -61,13 +61,13 @@ This displays the disc structure recorded in the TOC file.
 A `cdrdao` archive can be written back to a blank CD-R using the `cdrdao write` command:
 
 ```bash
-cdrdao write --speed 40 CD.toc
+cdrdao write --speed 16 CD.toc
 ```
 
 > **Command Explanation**
 >
 > - `cdrdao write` writes a disc image described by a TOC file.
-> - `--speed 40` selects the writing speed. Choose a speed supported by your drive and blank CD-R. A slower speed may improve compatibility with older drives and media.
+> - `--speed 16` selects the writing speed. Choose a speed supported by your drive and blank CD-R. A slower speed may improve compatibility with older drives and media.
 > - `CD.toc` specifies the TOC file created during the read operation.
 
 The resulting disc should contain the same CD-DA structure as the original disc and should be playable in standard audio CD players.
@@ -121,9 +121,9 @@ To recreate an Enhanced CD, each session must be written back in the correct ord
 The CD-DA session should be written first and the disc left open (`--multi`). The data session should then be appended without `--multi` so that the disc is finalized:
 
 ```bash
-cdrdao write --speed 40 --multi session1.toc
+cdrdao write --speed 16 --multi session1.toc
 
-cdrdao write --speed 40 session2.toc
+cdrdao write --speed 16 session2.toc
 ```
 
 > **Command Explanation**
